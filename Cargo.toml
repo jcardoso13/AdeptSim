@@ -1,0 +1,6 @@
+[package]
+name = "adept_sim"
+version = "0.1.0"
+authors = ["Luís Fiolhais <luis.azenhas.fiolhais@tecnico.ulisboa.pt>"]
+
+[dependencies]
