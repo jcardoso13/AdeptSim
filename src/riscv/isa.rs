@@ -239,11 +239,17 @@ mod tests {
     /// Generate the standard test for most instructions. Create correct object
     /// and then compare with generated object.
     macro_rules! generate_test {
-        ($type:expr, $op:expr, $op_code:expr, [ $($x:expr),* ]) => {{
-            let final_instr_type = InstrType {
+        // Create instruction type
+        ($type:expr, $op:expr) => {
+            InstrType {
                 instr_type: $type,
                 instr_op: $op,
-            };
+            }
+        };
+
+        // Create test for several functions
+        ($type:expr, $op:expr, $op_code:expr, [ $($x:expr),+ ]) => {{
+            let final_instr_type = generate_test!($type, $op);
 
             $(
                 let parsed_instr_type = InstrType::new($op_code, $x, false);
@@ -253,23 +259,14 @@ mod tests {
             )*
         }};
 
+        // Create test for a single function
         ($type:expr, $op:expr, $op_code:expr, $funct:expr) => {{
-            let final_instr_type = InstrType {
-                instr_type: $type,
-                instr_op: $op,
-            };
-
-            let parsed_instr_type = InstrType::new($op_code, $funct, true);
-            assert_eq!(parsed_instr_type, final_instr_type);
-            let parsed_instr_type = InstrType::new($op_code, $funct, false);
-            assert_eq!(parsed_instr_type, final_instr_type);
+            generate_test!($type, $op, $op_code, [$funct]);
         }};
 
+        // Create test for a single function with a specific option_op
         ($type:expr, $op:expr, $op_code:expr, $funct:expr, $option_op:expr) => {{
-            let final_instr_type = InstrType {
-                instr_type: $type,
-                instr_op: $op,
-            };
+            let final_instr_type = generate_test!($type, $op);
 
             let parsed_instr_type = InstrType::new($op_code, $funct, $option_op);
             assert_eq!(parsed_instr_type, final_instr_type);
