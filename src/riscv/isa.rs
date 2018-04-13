@@ -236,6 +236,9 @@ impl RV32I {
 mod tests {
     use super::*;
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Immediate Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
     /// Test ADDI detection
     /// When creating the InstrType instance the third argument for this
     /// instruction is don't care.
@@ -376,6 +379,9 @@ mod tests {
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Register Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
     /// Test ADD detection
     #[test]
     fn add() {
@@ -508,6 +514,9 @@ mod tests {
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Load Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
     /// Test LB detection
     #[test]
     fn lb() {
@@ -600,6 +609,9 @@ mod tests {
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Store Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
     /// Test SB detection
     #[test]
     fn sb() {
@@ -669,6 +681,111 @@ mod tests {
         let parsed_instr_type = InstrType::new(0x43, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
         let parsed_instr_type = InstrType::new(0x43, 7, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Jump Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test BEQ detection
+    #[test]
+    fn beq() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::BEQ,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test BNE detection
+    #[test]
+    fn bne() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::BNE,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 1, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 1, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test BLT detection
+    #[test]
+    fn blt() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::BLT,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 4, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 4, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test BGE detection
+    #[test]
+    fn bge() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::BGE,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 5, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 5, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test BLTU detection
+    #[test]
+    fn bltu() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::BLTU,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 6, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 6, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test BGEU detection
+    #[test]
+    fn bgeu() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::BGEU,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 7, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 7, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test Invalid branch instruction
+    #[test]
+    fn invalid_branch() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::B,
+            instr_op: RV32I::Invalid,
+        };
+
+        let parsed_instr_type = InstrType::new(0x63, 2, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 2, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 3, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x63, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 }
