@@ -275,7 +275,7 @@ mod tests {
             instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 7, false),
         };
 
-        // ORI R4, R3, 2047
+        // ANDI R4, R3, 2047
         let parsed_instr = Instruction::new(0x7ff1_f213);
         assert_eq!(parsed_instr, final_instr);
     }
@@ -292,7 +292,7 @@ mod tests {
             instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 7, false),
         };
 
-        // ORI R4, R3, -1
+        // ANDI R4, R3, -1
         let parsed_instr = Instruction::new(0xfff1_f213);
         assert_eq!(parsed_instr, final_instr);
     }
@@ -329,7 +329,7 @@ mod tests {
             instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, false),
         };
 
-        // ORI R4, R3, 2047
+        // SRLI R4, R3, 5
         let parsed_instr = Instruction::new(0x0051_d213);
         assert_eq!(parsed_instr, final_instr);
         // Remaining 7 bits should not be don't care
@@ -349,7 +349,7 @@ mod tests {
             instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, true),
         };
 
-        // ORI R4, R3, 2047
+        // SRAI R4, R3, 6
         let parsed_instr = Instruction::new(0x4061_d213);
         assert_eq!(parsed_instr, final_instr);
     }
