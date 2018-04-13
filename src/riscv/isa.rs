@@ -236,7 +236,21 @@ impl RV32I {
 mod tests {
     use super::*;
 
+    /// Generate the standard test for most instructions. Create correct object
+    /// and then compare with generated object.
     macro_rules! generate_test {
+        ($type:expr, $op:expr, $op_code:expr, $funct:expr) => {{
+            let final_instr_type = InstrType {
+                instr_type: $type,
+                instr_op: $op,
+            };
+
+            let parsed_instr_type = InstrType::new($op_code, $funct, true);
+            assert_eq!(parsed_instr_type, final_instr_type);
+            let parsed_instr_type = InstrType::new($op_code, $funct, false);
+            assert_eq!(parsed_instr_type, final_instr_type);
+        }};
+
         ($type:expr, $op:expr, $op_code:expr, $funct:expr, $option_op:expr) => {{
             let final_instr_type = InstrType {
                 instr_type: $type,
@@ -244,8 +258,6 @@ mod tests {
             };
 
             let parsed_instr_type = InstrType::new($op_code, $funct, $option_op);
-            assert_eq!(parsed_instr_type, final_instr_type);
-            let parsed_instr_type = InstrType::new($op_code, $funct, !$option_op);
             assert_eq!(parsed_instr_type, final_instr_type);
         }};
     }
@@ -258,7 +270,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn addi() {
-        generate_test!(RVT::I, RV32I::ADDI, RV32_OP_CODES_ARITH_IMM, 0, false);
+        generate_test!(RVT::I, RV32I::ADDI, RV32_OP_CODES_ARITH_IMM, 0);
     }
 
     /// Test SLTI detection
@@ -266,7 +278,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn slti() {
-        generate_test!(RVT::I, RV32I::SLTI, RV32_OP_CODES_ARITH_IMM, 2, false);
+        generate_test!(RVT::I, RV32I::SLTI, RV32_OP_CODES_ARITH_IMM, 2);
     }
 
     /// Test SLTIU detection
@@ -274,7 +286,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn sltiu() {
-        generate_test!(RVT::I, RV32I::SLTIU, RV32_OP_CODES_ARITH_IMM, 3, false);
+        generate_test!(RVT::I, RV32I::SLTIU, RV32_OP_CODES_ARITH_IMM, 3);
     }
 
     /// Test XORI detection
@@ -282,7 +294,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn xori() {
-        generate_test!(RVT::I, RV32I::XORI, RV32_OP_CODES_ARITH_IMM, 4, false);
+        generate_test!(RVT::I, RV32I::XORI, RV32_OP_CODES_ARITH_IMM, 4);
     }
 
     /// Test ORI detection
@@ -290,7 +302,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn ori() {
-        generate_test!(RVT::I, RV32I::ORI, RV32_OP_CODES_ARITH_IMM, 6, false);
+        generate_test!(RVT::I, RV32I::ORI, RV32_OP_CODES_ARITH_IMM, 6);
     }
 
     /// Test ANDI detection
@@ -298,7 +310,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn andi() {
-        generate_test!(RVT::I, RV32I::ANDI, RV32_OP_CODES_ARITH_IMM, 7, false);
+        generate_test!(RVT::I, RV32I::ANDI, RV32_OP_CODES_ARITH_IMM, 7);
     }
 
     /// Test SLLI detection
@@ -306,7 +318,7 @@ mod tests {
     /// instruction is don't care.
     #[test]
     fn slli() {
-        generate_test!(RVT::I, RV32I::SLLI, RV32_OP_CODES_ARITH_IMM, 1, false);
+        generate_test!(RVT::I, RV32I::SLLI, RV32_OP_CODES_ARITH_IMM, 1);
     }
 
     /// Test SRLI detection
@@ -314,13 +326,7 @@ mod tests {
     /// the logical or arithmetic right shift.
     #[test]
     fn srli() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::I,
-            instr_op: RV32I::SRLI,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::I, RV32I::SRLI, RV32_OP_CODES_ARITH_IMM, 5, false);
     }
 
     /// Test SRAI detection
@@ -328,13 +334,7 @@ mod tests {
     /// the logical or arithmetic right shift.
     #[test]
     fn srai() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::I,
-            instr_op: RV32I::SRAI,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::I, RV32I::SRAI, RV32_OP_CODES_ARITH_IMM, 5, true);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -343,85 +343,61 @@ mod tests {
     /// Test ADD detection
     #[test]
     fn add() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::R,
-            instr_op: RV32I::ADD,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 0, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::R, RV32I::ADD, RV32_OP_CODES_ARITH_REG, 0, false);
     }
 
     /// Test SUB detection
     #[test]
     fn sub() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::R,
-            instr_op: RV32I::SUB,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 0, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::R, RV32I::SUB, RV32_OP_CODES_ARITH_REG, 0, true);
     }
 
     /// Test SLL detection
     #[test]
     fn sll() {
-        generate_test!(RVT::R, RV32I::SLL, RV32_OP_CODES_ARITH_REG, 1, false);
+        generate_test!(RVT::R, RV32I::SLL, RV32_OP_CODES_ARITH_REG, 1);
     }
 
     /// Test SLT detection
     #[test]
     fn slt() {
-        generate_test!(RVT::R, RV32I::SLT, RV32_OP_CODES_ARITH_REG, 2, false);
+        generate_test!(RVT::R, RV32I::SLT, RV32_OP_CODES_ARITH_REG, 2);
     }
 
     /// Test SLTU detection
     #[test]
     fn sltu() {
-        generate_test!(RVT::R, RV32I::SLTU, RV32_OP_CODES_ARITH_REG, 3, false);
+        generate_test!(RVT::R, RV32I::SLTU, RV32_OP_CODES_ARITH_REG, 3);
     }
 
     /// Test XOR detection
     #[test]
     fn xor() {
-        generate_test!(RVT::R, RV32I::XOR, RV32_OP_CODES_ARITH_REG, 4, false);
+        generate_test!(RVT::R, RV32I::XOR, RV32_OP_CODES_ARITH_REG, 4);
     }
 
     /// Test SRL detection
     #[test]
     fn srl() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::R,
-            instr_op: RV32I::SRL,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 5, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::R, RV32I::SRL, RV32_OP_CODES_ARITH_REG, 5, false);
     }
 
     /// Test SRA detection
     #[test]
     fn sra() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::R,
-            instr_op: RV32I::SRA,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 5, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::R, RV32I::SRA, RV32_OP_CODES_ARITH_REG, 5, true);
     }
 
     /// Test OR detection
     #[test]
     fn or() {
-        generate_test!(RVT::R, RV32I::OR, RV32_OP_CODES_ARITH_REG, 6, false);
+        generate_test!(RVT::R, RV32I::OR, RV32_OP_CODES_ARITH_REG, 6);
     }
 
     /// Test AND detection
     #[test]
     fn and() {
-        generate_test!(RVT::R, RV32I::AND, RV32_OP_CODES_ARITH_REG, 7, false);
+        generate_test!(RVT::R, RV32I::AND, RV32_OP_CODES_ARITH_REG, 7);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -430,31 +406,31 @@ mod tests {
     /// Test LB detection
     #[test]
     fn lb() {
-        generate_test!(RVT::I, RV32I::LB, RV32_OP_CODES_MEM_LD, 0, false);
+        generate_test!(RVT::I, RV32I::LB, RV32_OP_CODES_MEM_LD, 0);
     }
 
     /// Test LH detection
     #[test]
     fn lh() {
-        generate_test!(RVT::I, RV32I::LH, RV32_OP_CODES_MEM_LD, 1, false);
+        generate_test!(RVT::I, RV32I::LH, RV32_OP_CODES_MEM_LD, 1);
     }
 
     /// Test LW detection
     #[test]
     fn lw() {
-        generate_test!(RVT::I, RV32I::LW, RV32_OP_CODES_MEM_LD, 2, false);
+        generate_test!(RVT::I, RV32I::LW, RV32_OP_CODES_MEM_LD, 2);
     }
 
     /// Test LBU detection
     #[test]
     fn lbu() {
-        generate_test!(RVT::I, RV32I::LBU, RV32_OP_CODES_MEM_LD, 4, false);
+        generate_test!(RVT::I, RV32I::LBU, RV32_OP_CODES_MEM_LD, 4);
     }
 
     /// Test LHU detection
     #[test]
     fn lhu() {
-        generate_test!(RVT::I, RV32I::LHU, RV32_OP_CODES_MEM_LD, 5, false);
+        generate_test!(RVT::I, RV32I::LHU, RV32_OP_CODES_MEM_LD, 5);
     }
 
     /// Test Invalid Load Instruction
@@ -485,19 +461,19 @@ mod tests {
     /// Test SB detection
     #[test]
     fn sb() {
-        generate_test!(RVT::S, RV32I::SB, RV32_OP_CODES_MEM_ST, 0, false);
+        generate_test!(RVT::S, RV32I::SB, RV32_OP_CODES_MEM_ST, 0);
     }
 
     /// Test SH detection
     #[test]
     fn sh() {
-        generate_test!(RVT::S, RV32I::SH, RV32_OP_CODES_MEM_ST, 1, false);
+        generate_test!(RVT::S, RV32I::SH, RV32_OP_CODES_MEM_ST, 1);
     }
 
     /// Test SW detection
     #[test]
     fn sw() {
-        generate_test!(RVT::S, RV32I::SW, RV32_OP_CODES_MEM_ST, 2, false);
+        generate_test!(RVT::S, RV32I::SW, RV32_OP_CODES_MEM_ST, 2);
     }
 
     /// Test Invalid Store Instruction
@@ -536,37 +512,37 @@ mod tests {
     /// Test BEQ detection
     #[test]
     fn beq() {
-        generate_test!(RVT::B, RV32I::BEQ, RV32_OP_CODES_BR, 0, false);
+        generate_test!(RVT::B, RV32I::BEQ, RV32_OP_CODES_BR, 0);
     }
 
     /// Test BNE detection
     #[test]
     fn bne() {
-        generate_test!(RVT::B, RV32I::BNE, RV32_OP_CODES_BR, 1, false);
+        generate_test!(RVT::B, RV32I::BNE, RV32_OP_CODES_BR, 1);
     }
 
     /// Test BLT detection
     #[test]
     fn blt() {
-        generate_test!(RVT::B, RV32I::BLT, RV32_OP_CODES_BR, 4, false);
+        generate_test!(RVT::B, RV32I::BLT, RV32_OP_CODES_BR, 4);
     }
 
     /// Test BGE detection
     #[test]
     fn bge() {
-        generate_test!(RVT::B, RV32I::BGE, RV32_OP_CODES_BR, 5, false);
+        generate_test!(RVT::B, RV32I::BGE, RV32_OP_CODES_BR, 5);
     }
 
     /// Test BLTU detection
     #[test]
     fn bltu() {
-        generate_test!(RVT::B, RV32I::BLTU, RV32_OP_CODES_BR, 6, false);
+        generate_test!(RVT::B, RV32I::BLTU, RV32_OP_CODES_BR, 6);
     }
 
     /// Test BGEU detection
     #[test]
     fn bgeu() {
-        generate_test!(RVT::B, RV32I::BGEU, RV32_OP_CODES_BR, 7, false);
+        generate_test!(RVT::B, RV32I::BGEU, RV32_OP_CODES_BR, 7);
     }
 
     /// Test Invalid branch instruction
@@ -593,7 +569,7 @@ mod tests {
     /// Test JALR detection
     #[test]
     fn jalr() {
-        generate_test!(RVT::I, RV32I::JALR, RV32_OP_CODES_JALR, 0, false);
+        generate_test!(RVT::I, RV32I::JALR, RV32_OP_CODES_JALR, 0);
     }
 
     /// Test JAL detection
@@ -682,7 +658,7 @@ mod tests {
     /// Test LUI detection
     #[test]
     fn lui() {
-        generate_test!(RVT::U, RV32I::LUI, RV32_OP_CODES_LUI, 0, false);
+        generate_test!(RVT::U, RV32I::LUI, RV32_OP_CODES_LUI, 0);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -691,6 +667,6 @@ mod tests {
     /// Test AUIPC detection
     #[test]
     fn auipc() {
-        generate_test!(RVT::U, RV32I::AUIPC, RV32_OP_CODES_AUIPC, 0, false);
+        generate_test!(RVT::U, RV32I::AUIPC, RV32_OP_CODES_AUIPC, 0);
     }
 }
