@@ -1,4 +1,5 @@
 //! The RISC-V Instruction Set
+use super::*;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct InstrType {
@@ -37,17 +38,6 @@ impl InstrType {
     }
 }
 
-// Instruction OP codes
-const RV32_ARITH_IMM_OP_CODE: u8 = 0x13;
-const RV32_ARITH_REG_OP_CODE: u8 = 0x33;
-const RV32_MEM_LD_OP_CODE: u8 = 0x03;
-const RV32_MEM_ST_OP_CODE: u8 = 0x43;
-const RV32_BR_OP_CODE: u8 = 0x63;
-const RV32_JALR_OP_CODE: u8 = 0x67;
-const RV32_JAL_OP_CODE: u8 = 0x6f;
-const RV32_AUIPC_OP_CODE: u8 = 0x1f;
-const RV32_LUI_OP_CODE: u8 = 0x3f;
-
 /// Instruction Register Types
 #[derive(Debug, Eq, PartialEq)]
 pub enum RVT {
@@ -72,22 +62,22 @@ impl RVT {
     fn new(op_code: u8) -> Self {
         match op_code {
             // LUI
-            RV32_LUI_OP_CODE => RVT::U,
+            RV32_OP_CODES_LUI => RVT::U,
             // AUIPC
-            RV32_AUIPC_OP_CODE => RVT::U,
+            RV32_OP_CODES_AUIPC => RVT::U,
             // Jumps
-            RV32_JAL_OP_CODE => RVT::J,
-            RV32_JALR_OP_CODE => RVT::I,
+            RV32_OP_CODES_JAL => RVT::J,
+            RV32_OP_CODES_JALR => RVT::I,
             // Branches
-            RV32_BR_OP_CODE => RVT::B,
+            RV32_OP_CODES_BR => RVT::B,
             // Loads
-            RV32_MEM_LD_OP_CODE => RVT::I,
+            RV32_OP_CODES_MEM_LD => RVT::I,
             // Stores
-            RV32_MEM_ST_OP_CODE => RVT::S,
+            RV32_OP_CODES_MEM_ST => RVT::S,
             // Register operations
-            RV32_ARITH_REG_OP_CODE => RVT::R,
+            RV32_OP_CODES_ARITH_REG => RVT::R,
             // Immediate operations
-            RV32_ARITH_IMM_OP_CODE => RVT::I,
+            RV32_OP_CODES_ARITH_IMM => RVT::I,
             _ => RVT::Invalid,
         }
     }
@@ -160,17 +150,17 @@ impl RV32I {
     fn new(op_code: u8, funct3: u8, option_op: bool) -> Self {
         match op_code {
             // LUI
-            RV32_LUI_OP_CODE => RV32I::LUI,
+            RV32_OP_CODES_LUI => RV32I::LUI,
             // AUIPC
-            RV32_AUIPC_OP_CODE => RV32I::AUIPC,
+            RV32_OP_CODES_AUIPC => RV32I::AUIPC,
             // Jumps
-            RV32_JAL_OP_CODE => RV32I::JAL,
-            RV32_JALR_OP_CODE => match funct3 {
+            RV32_OP_CODES_JAL => RV32I::JAL,
+            RV32_OP_CODES_JALR => match funct3 {
                 0 => RV32I::JALR,
                 _ => RV32I::Invalid,
             },
             // Branches
-            RV32_BR_OP_CODE => match funct3 {
+            RV32_OP_CODES_BR => match funct3 {
                 0 => RV32I::BEQ,
                 1 => RV32I::BNE,
                 4 => RV32I::BLT,
@@ -180,7 +170,7 @@ impl RV32I {
                 _ => RV32I::Invalid,
             },
             // Loads
-            RV32_MEM_LD_OP_CODE => match funct3 {
+            RV32_OP_CODES_MEM_LD => match funct3 {
                 0 => RV32I::LB,
                 1 => RV32I::LH,
                 2 => RV32I::LW,
@@ -189,14 +179,14 @@ impl RV32I {
                 _ => RV32I::Invalid,
             },
             // Stores
-            RV32_MEM_ST_OP_CODE => match funct3 {
+            RV32_OP_CODES_MEM_ST => match funct3 {
                 0 => RV32I::SB,
                 1 => RV32I::SH,
                 2 => RV32I::SW,
                 _ => RV32I::Invalid,
             },
             // Register operations
-            RV32_ARITH_REG_OP_CODE => match funct3 {
+            RV32_OP_CODES_ARITH_REG => match funct3 {
                 0 => {
                     if !option_op {
                         RV32I::ADD
@@ -220,7 +210,7 @@ impl RV32I {
                 _ => RV32I::Invalid,
             },
             // Immediate operations
-            RV32_ARITH_IMM_OP_CODE => match funct3 {
+            RV32_OP_CODES_ARITH_IMM => match funct3 {
                 0 => RV32I::ADDI,
                 1 => RV32I::SLLI,
                 2 => RV32I::SLTI,
@@ -247,6 +237,8 @@ mod tests {
     use super::*;
 
     /// Test ADDI detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn addi() {
         let final_instr_type = InstrType {
@@ -261,6 +253,8 @@ mod tests {
     }
 
     /// Test SLTI detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn slti() {
         let final_instr_type = InstrType {
@@ -275,6 +269,8 @@ mod tests {
     }
 
     /// Test SLTIU detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn sltiu() {
         let final_instr_type = InstrType {
@@ -289,6 +285,8 @@ mod tests {
     }
 
     /// Test XORI detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn xori() {
         let final_instr_type = InstrType {
@@ -303,6 +301,8 @@ mod tests {
     }
 
     /// Test ORI detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn ori() {
         let final_instr_type = InstrType {
@@ -317,6 +317,8 @@ mod tests {
     }
 
     /// Test ANDI detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn andi() {
         let final_instr_type = InstrType {
@@ -331,6 +333,8 @@ mod tests {
     }
 
     /// Test SLLI detection
+    /// When creating the InstrType instance the third argument for this
+    /// instruction is don't care.
     #[test]
     fn slli() {
         let final_instr_type = InstrType {
@@ -345,6 +349,8 @@ mod tests {
     }
 
     /// Test SRLI detection
+    /// When creating the InstrType instance the third argument selects between
+    /// the logical or arithmetic right shift.
     #[test]
     fn srli() {
         let final_instr_type = InstrType {
@@ -357,6 +363,8 @@ mod tests {
     }
 
     /// Test SRAI detection
+    /// When creating the InstrType instance the third argument selects between
+    /// the logical or arithmetic right shift.
     #[test]
     fn srai() {
         let final_instr_type = InstrType {
