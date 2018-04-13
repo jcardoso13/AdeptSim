@@ -249,9 +249,9 @@ mod tests {
             instr_op: RV32I::ADDI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -265,9 +265,9 @@ mod tests {
             instr_op: RV32I::SLTI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -281,9 +281,9 @@ mod tests {
             instr_op: RV32I::SLTIU,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -297,9 +297,9 @@ mod tests {
             instr_op: RV32I::XORI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -313,9 +313,9 @@ mod tests {
             instr_op: RV32I::ORI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -329,9 +329,9 @@ mod tests {
             instr_op: RV32I::ANDI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -345,9 +345,9 @@ mod tests {
             instr_op: RV32I::SLLI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x13, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -361,7 +361,7 @@ mod tests {
             instr_op: RV32I::SRLI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -375,7 +375,7 @@ mod tests {
             instr_op: RV32I::SRAI,
         };
 
-        let parsed_instr_type = InstrType::new(0x13, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -390,7 +390,7 @@ mod tests {
             instr_op: RV32I::ADD,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -402,7 +402,7 @@ mod tests {
             instr_op: RV32I::SUB,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -414,9 +414,9 @@ mod tests {
             instr_op: RV32I::SLL,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x33, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -428,9 +428,9 @@ mod tests {
             instr_op: RV32I::SLT,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x33, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -442,9 +442,9 @@ mod tests {
             instr_op: RV32I::SLTU,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x33, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -456,9 +456,9 @@ mod tests {
             instr_op: RV32I::XOR,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x33, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -470,7 +470,7 @@ mod tests {
             instr_op: RV32I::SRL,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -482,7 +482,7 @@ mod tests {
             instr_op: RV32I::SRA,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -494,9 +494,9 @@ mod tests {
             instr_op: RV32I::OR,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x33, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -508,9 +508,9 @@ mod tests {
             instr_op: RV32I::AND,
         };
 
-        let parsed_instr_type = InstrType::new(0x33, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x33, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_ARITH_REG, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -525,9 +525,9 @@ mod tests {
             instr_op: RV32I::LB,
         };
 
-        let parsed_instr_type = InstrType::new(0x03, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -539,9 +539,9 @@ mod tests {
             instr_op: RV32I::LH,
         };
 
-        let parsed_instr_type = InstrType::new(0x03, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -553,9 +553,9 @@ mod tests {
             instr_op: RV32I::LW,
         };
 
-        let parsed_instr_type = InstrType::new(0x03, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -567,9 +567,9 @@ mod tests {
             instr_op: RV32I::LBU,
         };
 
-        let parsed_instr_type = InstrType::new(0x03, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -581,9 +581,9 @@ mod tests {
             instr_op: RV32I::LHU,
         };
 
-        let parsed_instr_type = InstrType::new(0x03, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -595,17 +595,17 @@ mod tests {
             instr_op: RV32I::Invalid,
         };
 
-        let parsed_instr_type = InstrType::new(0x03, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x03, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -620,9 +620,9 @@ mod tests {
             instr_op: RV32I::SB,
         };
 
-        let parsed_instr_type = InstrType::new(0x43, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -634,9 +634,9 @@ mod tests {
             instr_op: RV32I::SH,
         };
 
-        let parsed_instr_type = InstrType::new(0x43, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -648,9 +648,9 @@ mod tests {
             instr_op: RV32I::SW,
         };
 
-        let parsed_instr_type = InstrType::new(0x43, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -662,25 +662,25 @@ mod tests {
             instr_op: RV32I::Invalid,
         };
 
-        let parsed_instr_type = InstrType::new(0x43, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x43, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -695,9 +695,9 @@ mod tests {
             instr_op: RV32I::BEQ,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -709,9 +709,9 @@ mod tests {
             instr_op: RV32I::BNE,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -723,9 +723,9 @@ mod tests {
             instr_op: RV32I::BLT,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -737,9 +737,9 @@ mod tests {
             instr_op: RV32I::BGE,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -751,9 +751,9 @@ mod tests {
             instr_op: RV32I::BLTU,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -765,9 +765,9 @@ mod tests {
             instr_op: RV32I::BGEU,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -779,13 +779,13 @@ mod tests {
             instr_op: RV32I::Invalid,
         };
 
-        let parsed_instr_type = InstrType::new(0x63, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x63, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -800,9 +800,9 @@ mod tests {
             instr_op: RV32I::JALR,
         };
 
-        let parsed_instr_type = InstrType::new(0x67, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -814,37 +814,37 @@ mod tests {
             instr_op: RV32I::JAL,
         };
 
-        let parsed_instr_type = InstrType::new(0x6f, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x6f, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -856,33 +856,33 @@ mod tests {
             instr_op: RV32I::Invalid,
         };
 
-        let parsed_instr_type = InstrType::new(0x67, 1, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 1, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 1, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 1, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 2, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 2, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 2, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 2, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 3, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 3, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 3, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 4, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 4, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 4, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 4, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 5, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 5, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 5, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 5, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 6, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 6, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 6, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 6, false);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 7, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 7, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x67, 7, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -897,9 +897,9 @@ mod tests {
             instr_op: RV32I::LUI,
         };
 
-        let parsed_instr_type = InstrType::new(0x3f, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_LUI, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x3f, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_LUI, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 
@@ -914,9 +914,9 @@ mod tests {
             instr_op: RV32I::AUIPC,
         };
 
-        let parsed_instr_type = InstrType::new(0x1f, 0, true);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_AUIPC, 0, true);
         assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(0x1f, 0, false);
+        let parsed_instr_type = InstrType::new(RV32_OP_CODES_AUIPC, 0, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 }
