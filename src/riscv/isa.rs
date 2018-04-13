@@ -685,7 +685,7 @@ mod tests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Jump Instruction Tests
+    // Branch Instruction Tests
     ////////////////////////////////////////////////////////////////////////////////
     /// Test BEQ detection
     #[test]
@@ -786,6 +786,103 @@ mod tests {
         let parsed_instr_type = InstrType::new(0x63, 3, true);
         assert_eq!(parsed_instr_type, final_instr_type);
         let parsed_instr_type = InstrType::new(0x63, 3, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Jump Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test JALR detection
+    #[test]
+    fn jalr() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::JALR,
+        };
+
+        let parsed_instr_type = InstrType::new(0x67, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test JAL detection
+    #[test]
+    fn jal() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::J,
+            instr_op: RV32I::JAL,
+        };
+
+        let parsed_instr_type = InstrType::new(0x6f, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 1, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 1, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 2, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 2, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 3, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 3, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 4, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 4, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 5, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 5, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 6, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 6, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 7, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x6f, 7, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test invalid jump
+    #[test]
+    fn invalid_jalr() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::Invalid,
+        };
+
+        let parsed_instr_type = InstrType::new(0x67, 1, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 1, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 2, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 2, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 3, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 3, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 4, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 4, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 5, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 5, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 6, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 6, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 7, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x67, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
 }
