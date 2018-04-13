@@ -885,4 +885,38 @@ mod tests {
         let parsed_instr_type = InstrType::new(0x67, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // LUI Instruction Test
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test LUI detection
+    #[test]
+    fn lui() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::U,
+            instr_op: RV32I::LUI,
+        };
+
+        let parsed_instr_type = InstrType::new(0x3f, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x3f, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // LUI Instruction Test
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test AUIPC detection
+    #[test]
+    fn auipc() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::U,
+            instr_op: RV32I::AUIPC,
+        };
+
+        let parsed_instr_type = InstrType::new(0x1f, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x1f, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
 }
