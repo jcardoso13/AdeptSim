@@ -239,6 +239,20 @@ mod tests {
     /// Generate the standard test for most instructions. Create correct object
     /// and then compare with generated object.
     macro_rules! generate_test {
+        ($type:expr, $op:expr, $op_code:expr, [ $($x:expr),* ]) => {{
+            let final_instr_type = InstrType {
+                instr_type: $type,
+                instr_op: $op,
+            };
+
+            $(
+                let parsed_instr_type = InstrType::new($op_code, $x, false);
+                assert_eq!(parsed_instr_type, final_instr_type);
+                let parsed_instr_type = InstrType::new($op_code, $x, true);
+                assert_eq!(parsed_instr_type, final_instr_type);
+            )*
+        }};
+
         ($type:expr, $op:expr, $op_code:expr, $funct:expr) => {{
             let final_instr_type = InstrType {
                 instr_type: $type,
@@ -436,23 +450,7 @@ mod tests {
     /// Test Invalid Load Instruction
     #[test]
     fn invalid_load() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::I,
-            instr_op: RV32I::Invalid,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 3, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 3, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 6, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 6, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 7, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_LD, 7, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::I, RV32I::Invalid, RV32_OP_CODES_MEM_LD, [3, 6, 7]);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -479,31 +477,12 @@ mod tests {
     /// Test Invalid Store Instruction
     #[test]
     fn invalid_store() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::S,
-            instr_op: RV32I::Invalid,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 3, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 3, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 4, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 4, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 5, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 5, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 6, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 6, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 7, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_MEM_ST, 7, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(
+            RVT::S,
+            RV32I::Invalid,
+            RV32_OP_CODES_MEM_ST,
+            [3, 4, 5, 6, 7]
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -548,19 +527,7 @@ mod tests {
     /// Test Invalid branch instruction
     #[test]
     fn invalid_branch() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::B,
-            instr_op: RV32I::Invalid,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 2, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 2, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 3, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_BR, 3, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(RVT::B, RV32I::Invalid, RV32_OP_CODES_BR, [2, 3]);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -575,81 +542,23 @@ mod tests {
     /// Test JAL detection
     #[test]
     fn jal() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::J,
-            instr_op: RV32I::JAL,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 0, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 0, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 1, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 1, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 2, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 2, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 3, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 3, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 4, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 4, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 5, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 5, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 6, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 6, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 7, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JAL, 7, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(
+            RVT::J,
+            RV32I::JAL,
+            RV32_OP_CODES_JAL,
+            [0, 1, 2, 3, 4, 5, 6, 7]
+        );
     }
 
     /// Test invalid jump
     #[test]
     fn invalid_jalr() {
-        let final_instr_type = InstrType {
-            instr_type: RVT::I,
-            instr_op: RV32I::Invalid,
-        };
-
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 1, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 1, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 2, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 2, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 3, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 3, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 4, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 4, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 5, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 5, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 6, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 6, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 7, true);
-        assert_eq!(parsed_instr_type, final_instr_type);
-        let parsed_instr_type = InstrType::new(RV32_OP_CODES_JALR, 7, false);
-        assert_eq!(parsed_instr_type, final_instr_type);
+        generate_test!(
+            RVT::I,
+            RV32I::Invalid,
+            RV32_OP_CODES_JALR,
+            [1, 2, 3, 4, 5, 6, 7]
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////
