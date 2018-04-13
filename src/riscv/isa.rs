@@ -507,4 +507,168 @@ mod tests {
         let parsed_instr_type = InstrType::new(0x33, 7, false);
         assert_eq!(parsed_instr_type, final_instr_type);
     }
+
+    /// Test LB detection
+    #[test]
+    fn lb() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::LB,
+        };
+
+        let parsed_instr_type = InstrType::new(0x03, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test LH detection
+    #[test]
+    fn lh() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::LH,
+        };
+
+        let parsed_instr_type = InstrType::new(0x03, 1, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 1, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test LW detection
+    #[test]
+    fn lw() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::LW,
+        };
+
+        let parsed_instr_type = InstrType::new(0x03, 2, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 2, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test LBU detection
+    #[test]
+    fn lbu() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::LBU,
+        };
+
+        let parsed_instr_type = InstrType::new(0x03, 4, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 4, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test LHU detection
+    #[test]
+    fn lhu() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::LHU,
+        };
+
+        let parsed_instr_type = InstrType::new(0x03, 5, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 5, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test Invalid Load Instruction
+    #[test]
+    fn invalid_load() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::I,
+            instr_op: RV32I::Invalid,
+        };
+
+        let parsed_instr_type = InstrType::new(0x03, 3, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 3, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 6, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 6, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 7, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x03, 7, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test SB detection
+    #[test]
+    fn sb() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::S,
+            instr_op: RV32I::SB,
+        };
+
+        let parsed_instr_type = InstrType::new(0x43, 0, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 0, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test SH detection
+    #[test]
+    fn sh() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::S,
+            instr_op: RV32I::SH,
+        };
+
+        let parsed_instr_type = InstrType::new(0x43, 1, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 1, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test SW detection
+    #[test]
+    fn sw() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::S,
+            instr_op: RV32I::SW,
+        };
+
+        let parsed_instr_type = InstrType::new(0x43, 2, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 2, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
+
+    /// Test Invalid Store Instruction
+    #[test]
+    fn invalid_store() {
+        let final_instr_type = InstrType {
+            instr_type: RVT::S,
+            instr_op: RV32I::Invalid,
+        };
+
+        let parsed_instr_type = InstrType::new(0x43, 3, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 3, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 4, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 4, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 5, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 5, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 6, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 6, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 7, true);
+        assert_eq!(parsed_instr_type, final_instr_type);
+        let parsed_instr_type = InstrType::new(0x43, 7, false);
+        assert_eq!(parsed_instr_type, final_instr_type);
+    }
 }
