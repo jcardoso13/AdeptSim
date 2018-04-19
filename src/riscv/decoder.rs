@@ -218,6 +218,17 @@ mod tests {
                 instr: InstrType::new(RV32_OP_CODES_JALR, 0, false),
             }
         };
+
+        (lui, $rsd:expr, $imm:expr) => {
+            Instruction {
+                rd: Some($rsd),
+                rs2: None,
+                rs1: None,
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_LUI, 0, false),
+            }
+        };
     }
 
     /// Generate the standard test every instruction. Create correct object and
@@ -249,6 +260,13 @@ mod tests {
 
         (jalr, $rd:expr, $rs1:expr, $imm:expr, $instr:expr) => {
             let final_instr = __create_instruction!(jalr, $rd, $rs1, $imm);
+
+            let parsed_instr = Instruction::new($instr);
+            assert_eq!(parsed_instr, final_instr);
+        };
+
+        (lui, $rd:expr, $imm:expr, $instr:expr) => {
+            let final_instr = __create_instruction!(lui, $rd, $imm);
 
             let parsed_instr = Instruction::new($instr);
             assert_eq!(parsed_instr, final_instr);
@@ -592,5 +610,19 @@ mod tests {
         generate_test!(jal, 1, -112, 0xf91f_f0ef);
         // jal	ra,10000648
         generate_test!(jal, 1, -76, 0xfb5f_f0ef);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // LUI Instruction Test
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test LUI detection
+    #[test]
+    fn lui() {
+        // lui	a4,0xdead0
+        generate_test!(lui, 14, 0xdead << 16, 0xdead_0737);
+        // lui	a5,0x40000
+        generate_test!(lui, 15, 0x4000 << 16, 0x4000_07b7);
+        // lui	a5,0x10000
+        generate_test!(lui, 15, 0x1000 << 16, 0x1000_07b7);
     }
 }

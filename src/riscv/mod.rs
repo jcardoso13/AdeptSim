@@ -11,5 +11,5 @@ const RV32_OP_CODES_MEM_ST: u8 = 0x23;
 const RV32_OP_CODES_BR: u8 = 0x63;
 const RV32_OP_CODES_JALR: u8 = 0x67;
 const RV32_OP_CODES_JAL: u8 = 0x6f;
-const RV32_OP_CODES_AUIPC: u8 = 0x1f;
-const RV32_OP_CODES_LUI: u8 = 0x3f;
+const RV32_OP_CODES_AUIPC: u8 = 0x17;
+const RV32_OP_CODES_LUI: u8 = 0x37;
