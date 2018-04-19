@@ -59,7 +59,8 @@ impl Instruction {
             match instr.instr_type {
                 RVT::I => Some((raw_instr & 0xfff0_0000) as i32 >> 20),
                 RVT::S => Some(
-                    (((raw_instr & 0xfe00_0000) >> 20) | ((raw_instr & 0x0000_0780) >> 7)) as i32,
+                    ((raw_instr & 0xfe00_0000) as i32 >> 20)
+                        | ((raw_instr & 0x0000_0f80) as i32 >> 7),
                 ),
                 RVT::B => Some(
                     (((raw_instr & 0x8000_0000) >> 20) | ((raw_instr & 0x7e00_0000) >> 15)
@@ -161,7 +162,7 @@ mod tests {
             }
         };
 
-        (load, $rd:expr, $rs1:expr, $imm:expr, $op:expr, $option_op:expr) => {
+        (load, $rd:expr, $rs1:expr, $imm:expr, $op:expr) => {
             Instruction {
                 rd: Some($rd),
                 rs2: None,
@@ -169,6 +170,17 @@ mod tests {
                 imm: Some($imm),
                 shamt: None,
                 instr: InstrType::new(RV32_OP_CODES_MEM_LD, $op, false),
+            }
+        };
+
+        (store, $rs2:expr, $rs1:expr, $imm:expr, $op:expr) => {
+            Instruction {
+                rd: None,
+                rs2: Some($rs2),
+                rs1: Some($rs1),
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_MEM_ST, $op, false),
             }
         };
     }
@@ -181,6 +193,13 @@ mod tests {
         ) => {
             let final_instr =
                 __create_instruction!($type, $rd, $rs1, $imm_or_rs2, $op, $option_op);
+
+            let parsed_instr = Instruction::new($instr);
+            assert_eq!(parsed_instr, final_instr);
+        };
+
+        ($type:tt, $rd:expr, $rs1:expr, $imm_or_rs2:expr, $op:expr, $instr:expr) => {
+            let final_instr = __create_instruction!($type, $rd, $rs1, $imm_or_rs2, $op);
 
             let parsed_instr = Instruction::new($instr);
             assert_eq!(parsed_instr, final_instr);
@@ -378,37 +397,75 @@ mod tests {
     #[test]
     fn lb() {
         // LB R4, 2(R6)
-        generate_test!(load, 4, 6, 2, 0, 0x0023_0203, false);
+        generate_test!(load, 4, 6, 2, 0, 0x0023_0203);
     }
 
     /// Test LH detection
     #[test]
     fn lh() {
         // LH R4, 2(R6)
-        generate_test!(load, 4, 6, 2, 1, 0x0023_1203, false);
+        generate_test!(load, 4, 6, 2, 1, 0x0023_1203);
     }
 
     /// Test LW detection
     #[test]
     fn lw() {
         // LW R4, 2(R6)
-        generate_test!(load, 4, 6, 2, 2, 0x0023_2203, false);
+        generate_test!(load, 4, 6, 2, 2, 0x0023_2203);
     }
 
     /// Test LBU detection
     #[test]
     fn lbu() {
         // LBU R4, 2(R6)
-        generate_test!(load, 4, 6, 2, 4, 0x0023_4203, false);
+        generate_test!(load, 4, 6, 2, 4, 0x0023_4203);
     }
 
     /// Test LHU detection
     #[test]
     fn lhu() {
         // LHU R4, 2(R6)
-        generate_test!(load, 4, 6, 2, 5, 0x0023_5203, false);
+        generate_test!(load, 4, 6, 2, 5, 0x0023_5203);
     }
 
     // TODO: Make tests for invalid op codes, and valid op codes and invalid
     // functions
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Store Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test SB detection with positive immediate
+    #[test]
+    fn sb_pos() {
+        // SB R4, 2(R6)
+        generate_test!(store, 4, 6, 2, 0, 0x0043_0123);
+        // SB R4, 17(R6)
+        generate_test!(store, 4, 6, 17, 0, 0x0043_08a3);
+        // SB R4, 1073(R6)
+        generate_test!(store, 4, 6, 1073, 0, 0x4243_08a3);
+    }
+
+    #[test]
+    fn sb_neg() {
+        // SB R4, -2(R6)
+        generate_test!(store, 4, 6, -2, 0, 0xfe43_0f23);
+        // SB R4, -17(R6)
+        generate_test!(store, 4, 6, -17, 0, 0xfe43_07a3);
+        // SB R4, -1073(R6)
+        generate_test!(store, 4, 6, -1073, 0, 0xbc43_07a3);
+    }
+
+    /// Test SH detection with positive immediate
+    #[test]
+    fn sh() {
+        // SH R4, 2(R6)
+        generate_test!(store, 4, 6, 2, 1, 0x0043_1123);
+    }
+
+    /// Test SW detection with positive immediate
+    #[test]
+    fn sw() {
+        // SW R4, 2(R6)
+        generate_test!(store, 4, 6, 2, 2, 0x0043_2123);
+    }
 }
