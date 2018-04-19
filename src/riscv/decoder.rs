@@ -229,6 +229,16 @@ mod tests {
                 instr: InstrType::new(RV32_OP_CODES_LUI, 0, false),
             }
         };
+        (auipc, $rsd:expr, $imm:expr) => {
+            Instruction {
+                rd: Some($rsd),
+                rs2: None,
+                rs1: None,
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_AUIPC, 0, false),
+            }
+        };
     }
 
     /// Generate the standard test every instruction. Create correct object and
@@ -267,6 +277,13 @@ mod tests {
 
         (lui, $rd:expr, $imm:expr, $instr:expr) => {
             let final_instr = __create_instruction!(lui, $rd, $imm);
+
+            let parsed_instr = Instruction::new($instr);
+            assert_eq!(parsed_instr, final_instr);
+        };
+
+        (auipc, $rd:expr, $imm:expr, $instr:expr) => {
+            let final_instr = __create_instruction!(auipc, $rd, $imm);
 
             let parsed_instr = Instruction::new($instr);
             assert_eq!(parsed_instr, final_instr);
@@ -624,5 +641,19 @@ mod tests {
         generate_test!(lui, 15, 0x4000 << 16, 0x4000_07b7);
         // lui	a5,0x10000
         generate_test!(lui, 15, 0x1000 << 16, 0x1000_07b7);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // AUIPC Instruction Test
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test AUIPC detection
+    #[test]
+    fn auipc() {
+        // auipc	gp,0x70000
+        generate_test!(auipc, 3, 0x7000 << 16, 0x7000_0197);
+        // auipc	sp,0x70008
+        generate_test!(auipc, 2, 0x7000 << 16, 0x7000_8117);
+        // auipc	ra,0x0
+        generate_test!(auipc, 1, 0, 0x0000_0097);
     }
 }
