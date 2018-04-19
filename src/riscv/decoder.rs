@@ -93,264 +93,147 @@ mod tests {
     use super::*;
     use riscv::*;
 
+    /// Generate the standard test for immediate instructions. Create correct object
+    /// and then compare with generated object.
+    macro_rules! generate_test {
+        (imm, $rd:expr, $rs1:expr, $imm:expr, $op:expr, $option_op:expr) => {
+            Instruction {
+                rd: Some($rd),
+                rs2: None,
+                rs1: Some($rs1),
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, $op, $option_op),
+            }
+        };
+
+        (shift_imm, $rd:expr, $rs1:expr, $shift:expr, $op:expr, $option_op:expr) => {
+            Instruction {
+                rd: Some($rd),
+                rs2: None,
+                rs1: Some($rs1),
+                imm: None,
+                shamt: Some($shift),
+                instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, $op, $option_op),
+            }
+        };
+
+        ($type:tt, $rd:expr, $rs1:expr, $imm:expr, $op:expr, $instr:expr, $option_op:expr) => {
+            let final_instr = generate_test!($type, $rd, $rs1, $imm, $op, $option_op);
+
+            let parsed_instr = Instruction::new($instr);
+            assert_eq!(parsed_instr, final_instr);
+        };
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Immediate Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
     /// Test ADDI instruction with a positive immediate
     #[test]
     fn addi_pos() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(15),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 0, false),
-        };
-
         // ADDI R4 <= R3 + 15
-        let parsed_instr = Instruction::new(0x00f1_8213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, 15, 0, 0x00f1_8213, false);
     }
 
     /// Test ADDI instruction with a negative immediate
     #[test]
     fn addi_neg() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(-15),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 0, false),
-        };
-
         // ADDI R4 <= R3 + (-15)
-        let parsed_instr = Instruction::new(0xff11_8213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, -15, 0, 0xff11_8213, false);
     }
 
     /// Test SLTI instruction with a positive immediate
     #[test]
     fn slti_pos() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(2047),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 2, false),
-        };
-
         // SLTI R4, R3, 2047
-        let parsed_instr = Instruction::new(0x7ff1_a213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, 2047, 2, 0x7ff1_a213, false);
     }
 
     /// Test SLTI instruction with a negative immediate
     #[test]
     fn slti_neg() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(-1),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 2, false),
-        };
-
         // SLTI R4, R3, -1
-        let parsed_instr = Instruction::new(0xfff1_a213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, -1, 2, 0xfff1_a213, false);
     }
 
     /// Test SLTIU instruction with a positive immediate
     #[test]
     fn sltiu_pos() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(2047),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 3, false),
-        };
-
         // SLTI R4, R3, 2047
-        let parsed_instr = Instruction::new(0x7ff1_b213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, 2047, 3, 0x7ff1_b213, false);
     }
 
     /// Test SLTIU instruction with a negative immediate
     #[test]
     fn sltiu_neg() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(-1),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 3, false),
-        };
-
         // SLTI R4, R3, -1
-        let parsed_instr = Instruction::new(0xfff1_b213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, -1, 3, 0xfff1_b213, false);
     }
 
     /// Test XORI instruction with a positive immediate
     #[test]
     fn xori_pos() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(2047),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 4, false),
-        };
-
         // XORI R4, R3, 2047
-        let parsed_instr = Instruction::new(0x7ff1_c213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, 2047, 4, 0x7ff1_c213, false);
     }
 
     /// Test XORI instruction with a negative immediate
     #[test]
     fn xori_neg() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(-1),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 4, false),
-        };
-
         // XORI R4, R3, -1
-        let parsed_instr = Instruction::new(0xfff1_c213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, -1, 4, 0xfff1_c213, false);
     }
 
     /// Test ORI instruction with a positive immediate
     #[test]
     fn ori_pos() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(2047),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 6, false),
-        };
-
         // ORI R4, R3, 2047
-        let parsed_instr = Instruction::new(0x7ff1_e213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, 2047, 6, 0x7ff1_e213, false);
     }
 
     /// Test ORI instruction with a negative immediate
     #[test]
     fn ori_neg() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(-1),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 6, false),
-        };
-
         // ORI R4, R3, -1
-        let parsed_instr = Instruction::new(0xfff1_e213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, -1, 6, 0xfff1_e213, false);
     }
 
     /// Test ANDI instruction with a positive immediate
     #[test]
     fn andi_pos() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(2047),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 7, false),
-        };
-
         // ANDI R4, R3, 2047
-        let parsed_instr = Instruction::new(0x7ff1_f213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, 2047, 7, 0x7ff1_f213, false);
     }
 
     /// Test ANDI instruction with a negative immediate
     #[test]
     fn andi_neg() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: Some(-1),
-            shamt: None,
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 7, false),
-        };
-
         // ANDI R4, R3, -1
-        let parsed_instr = Instruction::new(0xfff1_f213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(imm, 4, 3, -1, 7, 0xfff1_f213, false);
     }
 
     /// Test SLLI instruction with a positive immediate
     #[test]
     fn slli() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: None,
-            shamt: Some(4),
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 1, false),
-        };
+        generate_test!(shift_imm, 4, 3, 4, 1, 0x0041_9213, false);
 
-        // SLLI R4, R3, 4
-        let parsed_instr = Instruction::new(0x0041_9213);
-        assert_eq!(parsed_instr, final_instr);
-        // Remaining 7 bits should be don't care
-        let parsed_instr = Instruction::new(0x6a41_9213);
-        assert_eq!(parsed_instr, final_instr);
+        // TODO: Remaining 7 bits shouldn't be don't care
+        // let parsed_instr = Instruction::new(0x6a41_9213);
+        // assert_eq!(parsed_instr, final_instr);
     }
 
     /// Test SRLI instruction with a positive immediate
     #[test]
     fn srli() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: None,
-            shamt: Some(5),
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, false),
-        };
-
         // SRLI R4, R3, 5
-        let parsed_instr = Instruction::new(0x0051_d213);
-        assert_eq!(parsed_instr, final_instr);
-        // Remaining 7 bits should not be don't care
-        let parsed_instr = Instruction::new(0x0051_d213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(shift_imm, 4, 3, 5, 5, 0x0051_d213, false);
     }
 
     /// Test SRAI instruction with a positive immediate
     #[test]
     fn srai() {
-        let final_instr = Instruction {
-            rd: Some(4),
-            rs2: None,
-            rs1: Some(3),
-            imm: None,
-            shamt: Some(6),
-            instr: InstrType::new(RV32_OP_CODES_ARITH_IMM, 5, true),
-        };
-
         // SRAI R4, R3, 6
-        let parsed_instr = Instruction::new(0x4061_d213);
-        assert_eq!(parsed_instr, final_instr);
+        generate_test!(shift_imm, 4, 3, 6, 5, 0x4061_d213, true);
     }
 }

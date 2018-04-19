@@ -45,7 +45,7 @@ pub enum RVT {
     R,
     /// Immediate Type
     I,
-    /// Story Type
+    /// Store Type
     S,
     /// Branch Type
     B,
@@ -53,7 +53,7 @@ pub enum RVT {
     U,
     /// Jump Type
     J,
-    /// Invalide Type
+    /// Invalid Type
     Invalid,
 }
 
