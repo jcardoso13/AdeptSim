@@ -70,8 +70,8 @@ impl Instruction {
                 ),
                 RVT::U => Some((raw_instr & 0xffff_0000) as i32),
                 RVT::J => Some(
-                    ((raw_instr & 0x7fe0_0000) as i32 >> 19)
-                        | ((raw_instr & 0x0010_0000) as i32 >> 8)
+                    ((raw_instr & 0x7fe0_0000) as i32 >> 20)
+                        | ((raw_instr & 0x0010_0000) as i32 >> 9)
                         | (raw_instr & 0x000f_f000) as i32
                         | ((raw_instr & 0x8000_0000) as i32 >> 11),
                 ),
@@ -196,6 +196,28 @@ mod tests {
                 instr: InstrType::new(RV32_OP_CODES_BR, $op, false),
             }
         };
+
+        (jal, $rsd:expr, $imm:expr) => {
+            Instruction {
+                rd: Some($rsd),
+                rs2: None,
+                rs1: None,
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_JAL, 0, false),
+            }
+        };
+
+        (jalr, $rsd:expr, $rs1:expr, $imm:expr) => {
+            Instruction {
+                rd: Some($rsd),
+                rs2: None,
+                rs1: Some($rs1),
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_JALR, 0, false),
+            }
+        };
     }
 
     /// Generate the standard test every instruction. Create correct object and
@@ -213,6 +235,20 @@ mod tests {
 
         ($type:tt, $rd:expr, $rs1:expr, $imm_or_rs2:expr, $op:expr, $instr:expr) => {
             let final_instr = __create_instruction!($type, $rd, $rs1, $imm_or_rs2, $op);
+
+            let parsed_instr = Instruction::new($instr);
+            assert_eq!(parsed_instr, final_instr);
+        };
+
+        (jal, $rd:expr, $imm:expr, $instr:expr) => {
+            let final_instr = __create_instruction!(jal, $rd, $imm);
+
+            let parsed_instr = Instruction::new($instr);
+            assert_eq!(parsed_instr, final_instr);
+        };
+
+        (jalr, $rd:expr, $rs1:expr, $imm:expr, $instr:expr) => {
+            let final_instr = __create_instruction!(jalr, $rd, $rs1, $imm);
 
             let parsed_instr = Instruction::new($instr);
             assert_eq!(parsed_instr, final_instr);
@@ -531,5 +567,30 @@ mod tests {
     fn bgeu() {
         // bleu	a1,a0,10000028
         generate_test!(branch, 11, 10, 16, 7, 0x00b5_7863);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Jump Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test JALR detection
+    #[test]
+    fn jalr() {
+        // jr	t0
+        generate_test!(jalr, 0, 5, 0, 0x0002_8067);
+        // ret
+        generate_test!(jalr, 0, 1, 0, 0x0000_8067);
+    }
+
+    /// Test JAL detection
+    #[test]
+    fn jal() {
+        // jal	ra,10000648
+        generate_test!(jal, 1, -136, 0xf79f_f0ef);
+        // jal	ra,10000648
+        generate_test!(jal, 1, -160, 0xf61f_f0ef);
+        // jal	ra,10000648
+        generate_test!(jal, 1, -112, 0xf91f_f0ef);
+        // jal	ra,10000648
+        generate_test!(jal, 1, -76, 0xfb5f_f0ef);
     }
 }
