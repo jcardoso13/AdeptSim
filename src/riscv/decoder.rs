@@ -1,6 +1,7 @@
 use super::isa::{InstrType, RVT};
+use std::cmp::PartialEq;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq)]
 pub struct Instruction {
     /// Instruction Type
     instr: InstrType,
@@ -88,14 +89,45 @@ impl Instruction {
     }
 }
 
+impl PartialEq for Instruction {
+    fn eq(&self, other: &Self) -> bool {
+        // Invalid instructions are always the equal regardless of the remaining
+        // parameters
+        if self.instr.instr_type == RVT::Invalid && other.instr.instr_type == RVT::Invalid {
+            return true;
+        }
+
+        if self.instr == other.instr {
+            if self.rd != other.rd {
+                return false;
+            }
+            if self.rs1 != other.rs1 {
+                return false;
+            }
+            if self.rs2 != other.rs2 {
+                return false;
+            }
+            if self.imm != other.imm {
+                return false;
+            }
+            if self.shamt != other.shamt {
+                return false;
+            }
+
+            return true;
+        }
+
+        false
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use riscv::*;
 
-    /// Generate the standard test for immediate instructions. Create correct object
-    /// and then compare with generated object.
-    macro_rules! generate_test {
+    /// Create Instruction object with specific instruction type
+    macro_rules! __create_instruction {
         (imm, $rd:expr, $rs1:expr, $imm:expr, $op:expr, $option_op:expr) => {
             Instruction {
                 rd: Some($rd),
@@ -139,9 +171,16 @@ mod tests {
                 instr: InstrType::new(RV32_OP_CODES_MEM_LD, $op, false),
             }
         };
+    }
 
-        ($type:tt, $rd:expr, $rs1:expr, $imm_or_rs2:expr, $op:expr, $instr:expr, $option_op:expr) => {
-            let final_instr = generate_test!($type, $rd, $rs1, $imm_or_rs2, $op, $option_op);
+    /// Generate the standard test every instruction. Create correct object and
+    /// then compare with generated object.
+    macro_rules! generate_test {
+        (
+            $type:tt, $rd:expr, $rs1:expr, $imm_or_rs2:expr, $op:expr, $instr:expr, $option_op:expr
+        ) => {
+            let final_instr =
+                __create_instruction!($type, $rd, $rs1, $imm_or_rs2, $op, $option_op);
 
             let parsed_instr = Instruction::new($instr);
             assert_eq!(parsed_instr, final_instr);
@@ -369,4 +408,7 @@ mod tests {
         // LHU R4, 2(R6)
         generate_test!(load, 4, 6, 2, 5, 0x0023_5203, false);
     }
+
+    // TODO: Make tests for invalid op codes, and valid op codes and invalid
+    // functions
 }

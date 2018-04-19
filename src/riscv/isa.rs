@@ -236,9 +236,7 @@ impl RV32I {
 mod tests {
     use super::*;
 
-    /// Generate the standard test for most instructions. Create correct object
-    /// and then compare with generated object.
-    macro_rules! generate_test {
+    macro_rules! __create_instrtype {
         // Create instruction type
         ($type:expr, $op:expr) => {
             InstrType {
@@ -246,10 +244,14 @@ mod tests {
                 instr_op: $op,
             }
         };
+    }
 
+    /// Generate the standard test for most instructions. Create correct object
+    /// and then compare with generated object.
+    macro_rules! generate_test {
         // Create test for several functions
         ($type:expr, $op:expr, $op_code:expr, [ $($x:expr),+ ]) => {{
-            let final_instr_type = generate_test!($type, $op);
+            let final_instr_type = __create_instrtype!($type, $op);
 
             $(
                 let parsed_instr_type = InstrType::new($op_code, $x, false);
@@ -266,7 +268,7 @@ mod tests {
 
         // Create test for a single function with a specific option_op
         ($type:expr, $op:expr, $op_code:expr, $funct:expr, $option_op:expr) => {{
-            let final_instr_type = generate_test!($type, $op);
+            let final_instr_type = __create_instrtype!($type, $op);
 
             let parsed_instr_type = InstrType::new($op_code, $funct, $option_op);
             assert_eq!(parsed_instr_type, final_instr_type);
