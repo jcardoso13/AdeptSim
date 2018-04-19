@@ -129,6 +129,17 @@ mod tests {
             }
         };
 
+        (load, $rd:expr, $rs1:expr, $imm:expr, $op:expr, $option_op:expr) => {
+            Instruction {
+                rd: Some($rd),
+                rs2: None,
+                rs1: Some($rs1),
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_MEM_LD, $op, false),
+            }
+        };
+
         ($type:tt, $rd:expr, $rs1:expr, $imm_or_rs2:expr, $op:expr, $instr:expr, $option_op:expr) => {
             let final_instr = generate_test!($type, $rd, $rs1, $imm_or_rs2, $op, $option_op);
 
@@ -319,5 +330,43 @@ mod tests {
     fn and() {
         // AND R4, R6, R2
         generate_test!(register, 4, 6, 2, 7, 0x0023_7233, false);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Load Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test LB detection
+    #[test]
+    fn lb() {
+        // LB R4, 2(R6)
+        generate_test!(load, 4, 6, 2, 0, 0x0023_0203, false);
+    }
+
+    /// Test LH detection
+    #[test]
+    fn lh() {
+        // LH R4, 2(R6)
+        generate_test!(load, 4, 6, 2, 1, 0x0023_1203, false);
+    }
+
+    /// Test LW detection
+    #[test]
+    fn lw() {
+        // LW R4, 2(R6)
+        generate_test!(load, 4, 6, 2, 2, 0x0023_2203, false);
+    }
+
+    /// Test LBU detection
+    #[test]
+    fn lbu() {
+        // LBU R4, 2(R6)
+        generate_test!(load, 4, 6, 2, 4, 0x0023_4203, false);
+    }
+
+    /// Test LHU detection
+    #[test]
+    fn lhu() {
+        // LHU R4, 2(R6)
+        generate_test!(load, 4, 6, 2, 5, 0x0023_5203, false);
     }
 }
