@@ -63,15 +63,17 @@ impl Instruction {
                         | ((raw_instr & 0x0000_0f80) as i32 >> 7),
                 ),
                 RVT::B => Some(
-                    (((raw_instr & 0x8000_0000) >> 20) | ((raw_instr & 0x7e00_0000) >> 15)
-                        | ((raw_instr & 0x0000_0700) >> 7)
-                        | ((raw_instr & 0x0000_0080) << 3)) as i32,
+                    ((raw_instr & 0x8000_0000) as i32 >> 19)
+                        | ((raw_instr & 0x7e00_0000) as i32 >> 20)
+                        | ((raw_instr & 0x0000_0f00) as i32 >> 7)
+                        | (((raw_instr & 0x0000_0080) as i32) << 4),
                 ),
                 RVT::U => Some((raw_instr & 0xffff_0000) as i32),
                 RVT::J => Some(
-                    (((raw_instr & 0x7fe0_0000) >> 19) | ((raw_instr & 0x0010_0000) >> 8)
-                        | (raw_instr & 0x000f_f000)
-                        | ((raw_instr & 0x8000_0000) >> 11)) as i32,
+                    ((raw_instr & 0x7fe0_0000) as i32 >> 19)
+                        | ((raw_instr & 0x0010_0000) as i32 >> 8)
+                        | (raw_instr & 0x000f_f000) as i32
+                        | ((raw_instr & 0x8000_0000) as i32 >> 11),
                 ),
                 _ => None,
             }
@@ -181,6 +183,17 @@ mod tests {
                 imm: Some($imm),
                 shamt: None,
                 instr: InstrType::new(RV32_OP_CODES_MEM_ST, $op, false),
+            }
+        };
+
+        (branch, $rs2:expr, $rs1:expr, $imm:expr, $op:expr) => {
+            Instruction {
+                rd: None,
+                rs2: Some($rs2),
+                rs1: Some($rs1),
+                imm: Some($imm),
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_BR, $op, false),
             }
         };
     }
@@ -467,5 +480,56 @@ mod tests {
     fn sw() {
         // SW R4, 2(R6)
         generate_test!(store, 4, 6, 2, 2, 0x0043_2123);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Branch Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test BEQ detection
+    #[test]
+    fn beq_pos() {
+        // beqz	a3,8
+        generate_test!(branch, 0, 13, 8, 0, 0x0006_8463);
+    }
+
+    #[test]
+    fn beq_neg() {
+        // beq	r8,r23,-28
+        generate_test!(branch, 9, 15, -28, 0, 0xfe97_82e3);
+    }
+
+    /// Test BNE detection
+    #[test]
+    fn bne() {
+        // bnez	a1,-20
+        generate_test!(branch, 0, 11, -20, 1, 0xfe05_96e3);
+    }
+
+    /// Test BLT detection
+    #[test]
+    fn blt() {
+        // bltz	a1,20
+        generate_test!(branch, 0, 11, 20, 4, 0x0005_ca63);
+    }
+
+    /// Test BGE detection
+    #[test]
+    fn bge() {
+        // bgez	a0,100006d0
+        generate_test!(branch, 0, 10, -16, 5, 0xfe05_58e3);
+    }
+
+    /// Test BLTU detection
+    #[test]
+    fn bltu() {
+        // bltu	a0,a1,-8
+        generate_test!(branch, 11, 10, -8, 6, 0xfeb5_6ce3);
+    }
+
+    /// Test BGEU detection
+    #[test]
+    fn bgeu() {
+        // bleu	a1,a0,10000028
+        generate_test!(branch, 11, 10, 16, 7, 0x00b5_7863);
     }
 }
