@@ -118,8 +118,19 @@ mod tests {
             }
         };
 
-        ($type:tt, $rd:expr, $rs1:expr, $imm:expr, $op:expr, $instr:expr, $option_op:expr) => {
-            let final_instr = generate_test!($type, $rd, $rs1, $imm, $op, $option_op);
+        (register, $rd:expr, $rs1:expr, $rs2:expr, $op:expr, $option_op:expr) => {
+            Instruction {
+                rd: Some($rd),
+                rs2: Some($rs2),
+                rs1: Some($rs1),
+                imm: None,
+                shamt: None,
+                instr: InstrType::new(RV32_OP_CODES_ARITH_REG, $op, $option_op),
+            }
+        };
+
+        ($type:tt, $rd:expr, $rs1:expr, $imm_or_rs2:expr, $op:expr, $instr:expr, $option_op:expr) => {
+            let final_instr = generate_test!($type, $rd, $rs1, $imm_or_rs2, $op, $option_op);
 
             let parsed_instr = Instruction::new($instr);
             assert_eq!(parsed_instr, final_instr);
@@ -235,5 +246,78 @@ mod tests {
     fn srai() {
         // SRAI R4, R3, 6
         generate_test!(shift_imm, 4, 3, 6, 5, 0x4061_d213, true);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Register Instruction Tests
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test ADD decode
+    #[test]
+    fn add() {
+        // ADD R4, R6, R2
+        generate_test!(register, 4, 6, 2, 0, 0x0023_0233, false);
+    }
+
+    /// Test SUB decode
+    #[test]
+    fn sub() {
+        // SUB R4, R6, R2
+        generate_test!(register, 4, 6, 2, 0, 0x4023_0233, true);
+    }
+
+    /// Test SLL decode
+    #[test]
+    fn sll() {
+        // SLL R4, R6, R2
+        generate_test!(register, 4, 6, 2, 1, 0x0023_1233, false);
+    }
+
+    /// Test SLT decode
+    #[test]
+    fn slt() {
+        // SLT R4, R6, R2
+        generate_test!(register, 4, 6, 2, 2, 0x0023_2233, false);
+    }
+
+    /// Test SLTU decode
+    #[test]
+    fn sltu() {
+        // SLTU R4, R6, R2
+        generate_test!(register, 4, 6, 2, 3, 0x0023_3233, false);
+    }
+
+    /// Test XOR decode
+    #[test]
+    fn xor() {
+        // XOR R4, R6, R2
+        generate_test!(register, 4, 6, 2, 4, 0x0023_4233, false);
+    }
+
+    /// Test SRL decode
+    #[test]
+    fn srl() {
+        // SRL R4, R6, R2
+        generate_test!(register, 4, 6, 2, 5, 0x0023_5233, false);
+    }
+
+    /// Test SRA decode
+    #[test]
+    fn sra() {
+        // SRA R4, R6, R2
+        generate_test!(register, 4, 6, 2, 5, 0x4023_5233, true);
+    }
+
+    /// Test OR decode
+    #[test]
+    fn or() {
+        // OR R4, R6, R2
+        generate_test!(register, 4, 6, 2, 6, 0x0023_6233, false);
+    }
+
+    /// Test AND decode
+    #[test]
+    fn and() {
+        // AND R4, R6, R2
+        generate_test!(register, 4, 6, 2, 7, 0x0023_7233, false);
     }
 }
