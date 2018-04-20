@@ -1,7 +1,7 @@
 //! Helper RISC-V functions for decoding
 
 pub mod decoder;
-mod isa;
+pub mod isa;
 
 // Instruction OP codes
 const RV32_OP_CODES_ARITH_IMM: u8 = 0x13;
