@@ -4,3 +4,4 @@
 pub mod riscv;
 pub mod register_file;
 pub mod alu;
+pub mod mem;
