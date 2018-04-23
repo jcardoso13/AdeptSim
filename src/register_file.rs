@@ -10,7 +10,7 @@
 //! let mut my_reg_file = RegisterFile::new();
 //! // Write 5 to register 0 is ignored
 //! my_reg_file.write(0, 5);
-//! // However a write to 21 must
+//! // However a write to 21 is valid
 //! my_reg_file.write(21, 31);
 //! assert_eq!((0, 31), my_reg_file.read(0, 21));
 //! ```

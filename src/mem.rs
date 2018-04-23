@@ -2,6 +2,23 @@
 //! memory. The memory by default is created with an address space of 21 bits,
 //! which means the memory should use 8MB. You should consider storing this in
 //! the heap instead of the stack.
+//!
+//! # Example:
+//!
+//! ```
+//! # extern crate adept_sim;
+//! # use adept_sim::mem::{Memory, MemStoreOp, MemLoadOp};
+//! # use adept_sim::riscv::isa::RV32I;
+//! let mut my_mem = Box::new(Memory::new());
+//! # my_mem.write_data(&MemStoreOp::from(RV32I::SW), 0x0040_babc, 0xdead_beef);
+//! // To read the PC use the read_pc method
+//! assert_eq!(0xdead_beef, my_mem.read_pc(0x0040_babc));
+//! // To store data use the write_data method. You can use the object returned
+//! // by the decoder directly in the method.
+//! my_mem.write_data(&MemStoreOp::from(RV32I::SW), 0x0040_babc, 0xdead_babe);
+//! // To load data use the read_data method
+//! assert_eq!(0xdead_babe, my_mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc));
+//! ```
 use riscv::isa::RV32I;
 
 /// Memory is represented has 4 banks of 1 byte each.
@@ -16,8 +33,8 @@ pub struct Memory {
 impl Memory {
     const MEMORY_ADDR_SIZE: u32 = 21;
 
-    /// Create memory component. Memory is byte addressable and has a bank per
-    /// byte.
+    /// Create memory component. Memory is byte addressable, little endian, and
+    /// has a bank per byte.
     pub fn new() -> Self {
         Memory {
             bank_0: vec![0; 1 << Self::MEMORY_ADDR_SIZE],
@@ -49,13 +66,13 @@ impl Memory {
         final_data
     }
 
-    /// Mask address to be read or written depending on MEMORY_ADDR_SIZE.
-    ///
-    /// # Arguments
-    /// * `addr` => address to mask
-    ///
-    /// # Return Value
-    /// Masked address converted to usize as to ease Vec addressing
+    // Mask address to be read or written depending on MEMORY_ADDR_SIZE.
+    //
+    // # Arguments
+    // * `addr` => address to mask
+    //
+    // # Return Value
+    // Masked address converted to usize as to ease Vec addressing
     fn mask_addr(addr: u32) -> usize {
         (addr & ((1 << Self::MEMORY_ADDR_SIZE) + (1 << Self::MEMORY_ADDR_SIZE) - 1)) as usize
     }
