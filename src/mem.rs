@@ -76,6 +76,17 @@ impl Memory {
         self.bank_3[masked_addr] = data_3;
     }
 
+    // Get data from one memory bank at a specific address
+    fn get_data(&self, masked_addr: usize, addr_lsbs: u8) -> u8 {
+        match addr_lsbs {
+            0 => self.bank_0[masked_addr],
+            1 => self.bank_1[masked_addr],
+            2 => self.bank_2[masked_addr],
+            3 => self.bank_3[masked_addr],
+            _ => panic!("LSBs in read address is greater than 3"),
+        }
+    }
+
     /// Perform a read operation on the memory
     ///
     /// # Arguments
@@ -86,17 +97,11 @@ impl Memory {
     /// Value read from memory
     pub fn load_data(&self, op: &MemLoadOp, addr: u32) -> i32 {
         let masked_addr = Self::mask_addr(addr) >> 2;
-        let addr_lsbs = addr & 0x0000_0003;
+        let addr_lsbs = (addr & 0x0000_0003) as u8;
 
         match op {
             MemLoadOp::LoadByte => {
-                let data = match addr_lsbs {
-                    0 => self.bank_0[masked_addr],
-                    1 => self.bank_1[masked_addr],
-                    2 => self.bank_2[masked_addr],
-                    3 => self.bank_3[masked_addr],
-                    _ => panic!("LSBs in read address is greater than 3"),
-                };
+                let data = self.get_data(masked_addr, addr_lsbs);
 
                 let sign_extend: u32 = if ((data & 0x80) >> 7) == 1 {
                     0xffff_ff00
@@ -104,25 +109,12 @@ impl Memory {
                     0x0000_0000
                 };
 
+                // Cat and sign extend
                 (sign_extend | u32::from(data)) as i32
             }
             MemLoadOp::LoadHalf => {
-                let data_0 = match addr_lsbs {
-                    0 => self.bank_0[masked_addr],
-                    1 => self.bank_1[masked_addr],
-                    2 => self.bank_2[masked_addr],
-                    3 => self.bank_3[masked_addr],
-                    _ => panic!("Disaligned Access: LSBs in read address is greater than 3"),
-                };
-
-                let data_1 = match addr_lsbs + 1 {
-                    1 => self.bank_1[masked_addr],
-                    2 => self.bank_2[masked_addr],
-                    3 => self.bank_3[masked_addr],
-                    _ => {
-                        panic!("Disaligned Access Load Half: Second read address is greater than 3")
-                    }
-                };
+                let data_0 = self.get_data(masked_addr, addr_lsbs);
+                let data_1 = self.get_data(masked_addr, addr_lsbs + 1);
 
                 let sign_extend = if ((data_1 & 0x80) >> 7) == 1 {
                     0xffff_0000
@@ -143,8 +135,13 @@ impl Memory {
                     | u32::from(self.bank_1[masked_addr]) << 8
                     | u32::from(self.bank_0[masked_addr])) as i32
             }
-            MemLoadOp::LoadByteUnsigned => unimplemented!(),
-            MemLoadOp::LoadHalfUnsigned => unimplemented!(),
+            MemLoadOp::LoadByteUnsigned => i32::from(self.get_data(masked_addr, addr_lsbs)),
+            MemLoadOp::LoadHalfUnsigned => {
+                let data_0 = self.get_data(masked_addr, addr_lsbs);
+                let data_1 = self.get_data(masked_addr, addr_lsbs + 1);
+
+                (u32::from(data_1) << 8 | u32::from(data_0)) as i32
+            }
             MemLoadOp::InvalidLoad => panic!("Invalid Load"),
         }
     }
@@ -289,7 +286,7 @@ mod tests {
     #[test]
     #[should_panic]
     // TODO: This test fails because we are unable to read an address with
-    // an LSB with surpasses 4.
+    // an LSB which surpasses 4.
     fn test_load_data_half_invalid_lsb() {
         let mut mem = Box::new(Memory::new());
         mem.__write_garbage(0xdead_beef, 0x0040_babc);
@@ -311,5 +308,52 @@ mod tests {
     fn test_load_data_word_lsb_different_than_zero() {
         let mem = Box::new(Memory::new());
         let _ = mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babd);
+    }
+
+    #[test]
+    fn test_load_data_byte_unsigned() {
+        let mut mem = Box::new(Memory::new());
+        mem.__write_garbage(0xdead_beef, 0x0040_babc);
+        assert_eq!(
+            0x0000_00ef,
+            mem.load_data(&MemLoadOp::from(RV32I::LBU), 0x0040_babc)
+        );
+        assert_eq!(
+            0x0000_00be,
+            mem.load_data(&MemLoadOp::from(RV32I::LBU), 0x0040_babd)
+        );
+        assert_eq!(
+            0x0000_00ad,
+            mem.load_data(&MemLoadOp::from(RV32I::LBU), 0x0040_babe)
+        );
+        assert_eq!(
+            0x0000_00de,
+            mem.load_data(&MemLoadOp::from(RV32I::LBU), 0x0040_babf)
+        );
+    }
+
+    #[test]
+    fn test_load_data_half_unsigned() {
+        let mut mem = Box::new(Memory::new());
+        mem.__write_garbage(0xdead_beef, 0x0040_babc);
+        assert_eq!(
+            0x0000_beef,
+            mem.load_data(&MemLoadOp::from(RV32I::LHU), 0x0040_babc)
+        );
+        assert_eq!(
+            0x0000_adbe,
+            mem.load_data(&MemLoadOp::from(RV32I::LHU), 0x0040_babd)
+        );
+        assert_eq!(
+            0x0000_dead,
+            mem.load_data(&MemLoadOp::from(RV32I::LHU), 0x0040_babe)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_load_data_half_unsigned_invalid_lsb() {
+        let mem = Box::new(Memory::new());
+        let _ = mem.load_data(&MemLoadOp::from(RV32I::LHU), 0x0040_babf);
     }
 }
