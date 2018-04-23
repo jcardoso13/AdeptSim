@@ -77,12 +77,35 @@ impl Memory {
     }
 
     // Get data from one memory bank at a specific address
-    fn get_data(&self, masked_addr: usize, addr_lsbs: u8) -> u8 {
-        match addr_lsbs {
-            0 => self.bank_0[masked_addr],
-            1 => self.bank_1[masked_addr],
-            2 => self.bank_2[masked_addr],
-            3 => self.bank_3[masked_addr],
+    //
+    // # Arguments
+    // * `addr` => address to read data from
+    // * `select_bank` => ...
+    //
+    // # Return Value
+    // Value selected from the memory bank at the specified address
+    fn get_data(&self, addr: usize, select_bank: u8) -> u8 {
+        match select_bank {
+            0 => self.bank_0[addr],
+            1 => self.bank_1[addr],
+            2 => self.bank_2[addr],
+            3 => self.bank_3[addr],
+            _ => panic!("LSBs in read address is greater than 3"),
+        }
+    }
+
+    // Write data to one memory bank at a specific address
+    //
+    // # Arguments
+    // * `addr` => address to read data from
+    // * `select_bank` => ...
+    // * `data` => data to write
+    fn put_data(&mut self, addr: usize, select_bank: u8, data: u8) {
+        match select_bank {
+            0 => self.bank_0[addr] = data,
+            1 => self.bank_1[addr] = data,
+            2 => self.bank_2[addr] = data,
+            3 => self.bank_3[addr] = data,
             _ => panic!("LSBs in read address is greater than 3"),
         }
     }
@@ -127,7 +150,7 @@ impl Memory {
             }
             MemLoadOp::LoadWord => {
                 if addr_lsbs != 0 {
-                    panic!("Disaligned Access: Attempted to load word from non multiple of four address");
+                    panic!("Misaligned Access: Attempted to load word from non multiple of four address");
                 }
 
                 (u32::from(self.bank_3[masked_addr]) << 24
@@ -142,12 +165,48 @@ impl Memory {
 
                 (u32::from(data_1) << 8 | u32::from(data_0)) as i32
             }
-            MemLoadOp::InvalidLoad => panic!("Invalid Load"),
+            MemLoadOp::InvalidLoad => panic!("Invalid Load operation on Memory"),
+        }
+    }
+
+    /// Perform a write operation on the memory
+    ///
+    /// # Arguments
+    /// * `op` => write operation to perform (store byte, half, or word)
+    /// * `addr` => memory address to write to
+    /// * `data` => ...
+    pub fn write_data(&mut self, op: &MemStoreOp, addr: u32, data: u32) {
+        let split_data = (
+            data & 0x0000_00ff,
+            (data & 0x0000_ff00) >> 8,
+            (data & 0x00ff_0000) >> 16,
+            (data & 0xff00_0000) >> 24,
+        );
+        let masked_addr = Self::mask_addr(addr) >> 2;
+        let addr_lsbs = (addr & 0x0000_0003) as u8;
+
+        match op {
+            MemStoreOp::StoreByte => self.put_data(masked_addr, addr_lsbs, split_data.0 as u8),
+            MemStoreOp::StoreHalf => {
+                self.put_data(masked_addr, addr_lsbs, split_data.0 as u8);
+                self.put_data(masked_addr, addr_lsbs + 1, split_data.1 as u8);
+            }
+            MemStoreOp::StoreWord => {
+                if addr_lsbs != 0 {
+                    panic!("Misaligned Access: Attempted to write word to a non multiple of four address");
+                }
+
+                self.put_data(masked_addr, addr_lsbs, split_data.0 as u8);
+                self.put_data(masked_addr, addr_lsbs + 1, split_data.1 as u8);
+                self.put_data(masked_addr, addr_lsbs + 2, split_data.2 as u8);
+                self.put_data(masked_addr, addr_lsbs + 3, split_data.3 as u8);
+            }
+            MemStoreOp::InvalidStore => panic!("Invalid write operation on Memory"),
         }
     }
 }
 
-/// Mmemory Load Operations
+/// Memory Load Operations
 pub enum MemLoadOp {
     LoadByte,
     LoadHalf,
@@ -170,10 +229,32 @@ impl From<RV32I> for MemLoadOp {
     }
 }
 
+/// Memory Store Operations
+pub enum MemStoreOp {
+    StoreByte,
+    StoreHalf,
+    StoreWord,
+    InvalidStore,
+}
+
+impl From<RV32I> for MemStoreOp {
+    fn from(instr: RV32I) -> Self {
+        match instr {
+            RV32I::SB => MemStoreOp::StoreByte,
+            RV32I::SH => MemStoreOp::StoreHalf,
+            RV32I::SW => MemStoreOp::StoreWord,
+            _ => MemStoreOp::InvalidStore,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    ////////////////////////////////////////
+    // PC
+    ////////////////////////////////////////
     #[test]
     fn test_read_pc() {
         let mut mem = Box::new(Memory::new());
@@ -195,6 +276,9 @@ mod tests {
         assert_eq!(0x0031_3131, Memory::mask_addr(0x3131_3131));
     }
 
+    ////////////////////////////////////////
+    // Load Operations
+    ////////////////////////////////////////
     #[test]
     #[should_panic]
     fn test_load_data_invalid_with_mem_load_op() {
@@ -285,8 +369,6 @@ mod tests {
 
     #[test]
     #[should_panic]
-    // TODO: This test fails because we are unable to read an address with
-    // an LSB which surpasses 4.
     fn test_load_data_half_invalid_lsb() {
         let mut mem = Box::new(Memory::new());
         mem.__write_garbage(0xdead_beef, 0x0040_babc);
@@ -355,5 +437,100 @@ mod tests {
     fn test_load_data_half_unsigned_invalid_lsb() {
         let mem = Box::new(Memory::new());
         let _ = mem.load_data(&MemLoadOp::from(RV32I::LHU), 0x0040_babf);
+    }
+
+    ////////////////////////////////////////
+    // Write Operations
+    ////////////////////////////////////////
+    #[test]
+    #[should_panic]
+    fn test_store_data_invalid_with_mem_store_op() {
+        let mut mem = Box::new(Memory::new());
+        let _ = mem.write_data(&MemStoreOp::InvalidStore, 0x3141142, 0xdead_beef);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_store_data_invalid_with_rv32i() {
+        let mut mem = Box::new(Memory::new());
+        let _ = mem.write_data(&MemStoreOp::from(RV32I::ADD), 0x3141142, 0xdead_beef);
+    }
+
+    #[test]
+    fn test_write_data_byte() {
+        let mut mem = Box::new(Memory::new());
+        // Sanity write
+        mem.__write_garbage(0xdead_beef, 0x0040_babc);
+        // Actual real write
+        mem.write_data(&MemStoreOp::from(RV32I::SB), 0x0040_babc, 0x0000_0042);
+        assert_eq!(
+            (0xdead_be42 as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+        mem.write_data(&MemStoreOp::from(RV32I::SB), 0x0040_babd, 0x0000_0042);
+        assert_eq!(
+            (0xdead_4242 as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+        mem.write_data(&MemStoreOp::from(RV32I::SB), 0x0040_babe, 0x0000_0042);
+        assert_eq!(
+            (0xde42_4242 as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+        mem.write_data(&MemStoreOp::from(RV32I::SB), 0x0040_babf, 0x0000_0042);
+        assert_eq!(
+            0x4242_4242,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+    }
+
+    #[test]
+    fn test_write_data_half() {
+        let mut mem = Box::new(Memory::new());
+        // Sanity write
+        mem.__write_garbage(0xdead_beef, 0x0040_babc);
+        // Actual real write
+        mem.write_data(&MemStoreOp::from(RV32I::SH), 0x0040_babc, 0x0000_6942);
+        assert_eq!(
+            (0xdead_6942 as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+        mem.write_data(&MemStoreOp::from(RV32I::SH), 0x0040_babd, 0x0000_3142);
+        assert_eq!(
+            (0xde31_4242 as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+        mem.write_data(&MemStoreOp::from(RV32I::SH), 0x0040_babe, 0x0000_abcd);
+        assert_eq!(
+            (0xabcd_4242 as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_write_data_half_invalid_lsb() {
+        let mut mem = Box::new(Memory::new());
+        mem.write_data(&MemStoreOp::from(RV32I::SH), 0x0040_babf, 0xdeadbeef);
+    }
+
+    #[test]
+    fn test_write_data_word() {
+        let mut mem = Box::new(Memory::new());
+        // Sanity write
+        mem.__write_garbage(0xdead_beef, 0x0040_babc);
+        // Actual real write
+        mem.write_data(&MemStoreOp::from(RV32I::SW), 0x0040_babc, 0xbabe_31ab);
+        assert_eq!(
+            (0xbabe_31ab as u32) as i32,
+            mem.load_data(&MemLoadOp::from(RV32I::LW), 0x0040_babc)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_write_data_word_lsb_different_than_zero() {
+        let mut mem = Box::new(Memory::new());
+        mem.write_data(&MemStoreOp::from(RV32I::LW), 0x0040_babd, 0xabcd_ef12);
     }
 }
