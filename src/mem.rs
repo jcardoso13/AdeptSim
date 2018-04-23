@@ -6,7 +6,6 @@
 //! # Example:
 //!
 //! ```
-//! # extern crate adept_sim;
 //! # use adept_sim::mem::{Memory, MemStoreOp, MemLoadOp};
 //! # use adept_sim::riscv::isa::RV32I;
 //! let mut my_mem = Box::new(Memory::new());
@@ -139,7 +138,7 @@ impl Memory {
         let masked_addr = Self::mask_addr(addr) >> 2;
         let addr_lsbs = (addr & 0x0000_0003) as u8;
 
-        match op {
+        match *op {
             MemLoadOp::LoadByte => {
                 let data = self.get_data(masked_addr, addr_lsbs);
 
@@ -201,7 +200,7 @@ impl Memory {
         let masked_addr = Self::mask_addr(addr) >> 2;
         let addr_lsbs = (addr & 0x0000_0003) as u8;
 
-        match op {
+        match *op {
             MemStoreOp::StoreByte => self.put_data(masked_addr, addr_lsbs, split_data.0 as u8),
             MemStoreOp::StoreHalf => {
                 self.put_data(masked_addr, addr_lsbs, split_data.0 as u8);

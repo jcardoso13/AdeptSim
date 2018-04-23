@@ -5,7 +5,6 @@
 //! # Example:
 //!
 //! ```
-//! # extern crate adept_sim;
 //! # use adept_sim::register_file::RegisterFile;
 //! let mut my_reg_file = RegisterFile::new();
 //! // Write 5 to register 0 is ignored
