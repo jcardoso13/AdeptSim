@@ -149,14 +149,13 @@ impl Memory {
                 (sign_extend | u32::from(data_1) << 8 | u32::from(data_0)) as i32
             }
             MemLoadOp::LoadWord => {
-                if addr_lsbs != 0 {
-                    panic!("Misaligned Access: Attempted to load word from non multiple of four address");
-                }
+                let data_0 = self.get_data(masked_addr, addr_lsbs);
+                let data_1 = self.get_data(masked_addr, addr_lsbs + 1);
+                let data_2 = self.get_data(masked_addr, addr_lsbs + 2);
+                let data_3 = self.get_data(masked_addr, addr_lsbs + 3);
 
-                (u32::from(self.bank_3[masked_addr]) << 24
-                    | u32::from(self.bank_2[masked_addr]) << 16
-                    | u32::from(self.bank_1[masked_addr]) << 8
-                    | u32::from(self.bank_0[masked_addr])) as i32
+                (u32::from(data_3) << 24 | u32::from(data_2) << 16 | u32::from(data_1) << 8
+                    | u32::from(data_0)) as i32
             }
             MemLoadOp::LoadByteUnsigned => i32::from(self.get_data(masked_addr, addr_lsbs)),
             MemLoadOp::LoadHalfUnsigned => {
@@ -192,10 +191,6 @@ impl Memory {
                 self.put_data(masked_addr, addr_lsbs + 1, split_data.1 as u8);
             }
             MemStoreOp::StoreWord => {
-                if addr_lsbs != 0 {
-                    panic!("Misaligned Access: Attempted to write word to a non multiple of four address");
-                }
-
                 self.put_data(masked_addr, addr_lsbs, split_data.0 as u8);
                 self.put_data(masked_addr, addr_lsbs + 1, split_data.1 as u8);
                 self.put_data(masked_addr, addr_lsbs + 2, split_data.2 as u8);
