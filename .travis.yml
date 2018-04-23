@@ -1,1 +1,8 @@
 language: rust
+
+notifications:
+  email:
+    recipients:
+      - lfiolhais@iobundle.com
+    on_success: never
+    on_failure: always
