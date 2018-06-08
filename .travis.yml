@@ -4,5 +4,7 @@ notifications:
   email:
     recipients:
       - lfiolhais@iobundle.com
+      - rgoncalves@iobundle.com
+      - jsousa@iobundle.com
     on_success: never
     on_failure: always
