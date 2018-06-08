@@ -1,3 +1,24 @@
+extern crate adapt_mem_adept;
+#[macro_use]
+extern crate clap;
+
+use clap::{App, Arg};
+
 fn main() {
-    println!("Hello, world!");
+    let matches = App::new(crate_name!())
+        .version(crate_version!())
+        .author(crate_authors!())
+        .about(crate_description!())
+        .arg(
+            Arg::with_name("input_elf")
+                .value_name("INPUTFILE")
+                .help("Sets the input elf file")
+                .index(1)
+                .required(true),
+        )
+        .get_matches();
+
+    if let Some(o) = matches.value_of("input_elf") {
+        println!("Value for input_elf: {}", o);
+    }
 }

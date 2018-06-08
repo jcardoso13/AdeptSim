@@ -5,3 +5,4 @@ authors = ["Luís Fiolhais <luis.azenhas.fiolhais@tecnico.ulisboa.pt>"]
 
 [dependencies]
 adapt-mem-adept = { path = "adapt-mem-adept" }
+clap = "2.31.2"
