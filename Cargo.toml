@@ -2,7 +2,11 @@
 name = "adept_sim"
 version = "0.1.0"
 authors = ["Luís Fiolhais <lfiolhais@iobundle.com>", "Rafael Gonçalves <rgoncalves@iobundle.com>"]
+build = "build.rs"
 
 [dependencies]
 adapt-mem-adept = { path = "adapt-mem-adept" }
 clap = "2.31.2"
+
+[build-dependencies]
+git2 = "0.6"

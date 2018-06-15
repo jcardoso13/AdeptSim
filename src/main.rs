@@ -4,9 +4,12 @@ extern crate clap;
 
 use clap::{App, Arg};
 
+include!(concat!(env!("OUT_DIR"), "/gitv.rs"));
+
 fn main() {
     let matches = App::new(crate_name!())
         .version(crate_version!())
+        .long_version(&*format!("{}_{}",crate_version!(),LONG_VERSION))
         .author(crate_authors!())
         .about(crate_description!())
         .arg(
