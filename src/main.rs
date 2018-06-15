@@ -18,7 +18,15 @@ fn main() {
         )
         .get_matches();
 
-    if let Some(o) = matches.value_of("input_elf") {
-        println!("Value for input_elf: {}", o);
+    if let Some(filename) = matches.value_of("input_elf") {
+        println!("Value for input_elf: {}", filename);
+
+        let _result = match adapt_mem_adept::get_elf_data(filename) {
+            Ok(chunks) => {
+                println!("{:#?}", chunks);
+                chunks
+            }
+            Err(e) => panic!(e.to_string()),
+        };
     }
 }
