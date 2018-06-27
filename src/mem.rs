@@ -21,7 +21,7 @@
 use riscv::isa::RV32I;
 
 /// Memory is represented has 4 banks of 1 byte each.
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Memory {
     bank_0: Vec<u8>,
     bank_1: Vec<u8>,
