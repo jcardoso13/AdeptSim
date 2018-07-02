@@ -54,7 +54,7 @@ impl Memory {
         // Memory has a 32-bit address space but here we only use
         // MEMORY_ADDR_SIZE bits to address the memory. Thus, we are going to
         // mask the pc address.
-        let masked_pc = Self::mask_addr(pc) >> 2;
+        let masked_pc = Self::mask_addr(pc >> 2);
 
         // Concatenate addresses
         let final_data: u32 = u32::from(self.bank_3[masked_pc]) << 24
@@ -84,7 +84,7 @@ impl Memory {
         let data_2 = ((data & 0x00ff_0000) >> 16) as u8;
         let data_3 = ((data & 0xff00_0000) >> 24) as u8;
 
-        let masked_addr = Self::mask_addr(addr) >> 2;
+        let masked_addr = Self::mask_addr(addr >> 2);
 
         self.bank_0[masked_addr] = data_0;
         self.bank_1[masked_addr] = data_1;
@@ -135,7 +135,7 @@ impl Memory {
     /// # Return Value
     /// Value read from memory
     pub fn load_data(&self, op: &MemLoadOp, addr: u32) -> i32 {
-        let masked_addr = Self::mask_addr(addr) >> 2;
+        let masked_addr = Self::mask_addr(addr >> 2);
         let addr_lsbs = (addr & 0x0000_0003) as u8;
 
         match *op {
@@ -197,7 +197,7 @@ impl Memory {
             (data & 0x00ff_0000) >> 16,
             (data & 0xff00_0000) >> 24,
         );
-        let masked_addr = Self::mask_addr(addr) >> 2;
+        let masked_addr = Self::mask_addr(addr >> 2);
         let addr_lsbs = (addr & 0x0000_0003) as u8;
 
         match *op {
@@ -276,7 +276,7 @@ mod tests {
         mem.__write_garbage(0xbeef_dead, 0x0000_babc);
 
         assert_eq!(0xbeef_dead, mem.read_pc(0x0000_babc));
-        assert_eq!(0xbeef_dead, mem.read_pc(0x0040_babc));
+        assert_eq!(0xdead_beef, mem.read_pc(0x0040_babc));
     }
 
     #[test]
