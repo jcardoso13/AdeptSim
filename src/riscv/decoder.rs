@@ -90,6 +90,11 @@ impl Instruction {
             imm,
         }
     }
+
+    ///Get instruction validity
+    pub fn is_valid(&self) -> bool {
+        !(self.instr.instr_type == RVT::Invalid)
+    }
 }
 
 impl PartialEq for Instruction {
