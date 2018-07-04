@@ -10,3 +10,25 @@ clap = "2.31.2"
 
 [build-dependencies]
 git2 = "0.6"
+
+[[bin]]
+name = "adept_sim"
+path = "src/main.rs"
+test = true
+doctest = true
+bench = true
+doc = true
+plugin = false
+proc-macro = false
+harness = true
+
+[[bin]]
+name = "adept_disassembler"
+path = "src/disassembler.rs"
+test = true
+doctest = true
+bench = true
+doc = true
+plugin = false
+proc-macro = false
+harness = true
