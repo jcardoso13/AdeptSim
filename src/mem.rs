@@ -282,9 +282,9 @@ mod tests {
     #[test]
     fn test_mask_addr() {
         assert_eq!(0x0000_babe, Memory::mask_addr(0x0000_babe));
-        assert_eq!(0x002d_babe, Memory::mask_addr(0xdead_babe));
-        assert_eq!(0x002f_0000, Memory::mask_addr(0xbeef_0000));
-        assert_eq!(0x0031_3131, Memory::mask_addr(0x3131_3131));
+        assert_eq!(0x000d_babe, Memory::mask_addr(0xdead_babe));
+        assert_eq!(0x000f_0000, Memory::mask_addr(0xbeef_0000));
+        assert_eq!(0x0011_3131, Memory::mask_addr(0x3131_3131));
     }
 
     ////////////////////////////////////////
