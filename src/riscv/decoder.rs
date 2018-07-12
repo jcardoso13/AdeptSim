@@ -93,7 +93,7 @@ impl Instruction {
 
     ///Get instruction validity
     pub fn is_valid(&self) -> bool {
-        !(self.instr.instr_type == RVT::Invalid)
+        self.instr.instr_type != RVT::Invalid
     }
 }
 

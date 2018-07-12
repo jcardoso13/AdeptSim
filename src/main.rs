@@ -8,8 +8,8 @@ mod mem;
 mod riscv;
 
 use mem::{MemStoreOp, Memory};
-use riscv::isa::{RVT,RV32I};
 use riscv::decoder::Instruction;
+use riscv::isa::RV32I;
 
 include!(concat!(env!("OUT_DIR"), "/gitv.rs"));
 
@@ -52,15 +52,14 @@ fn main() {
 
         let mut pc = 0 as u32;
 
-        loop{
+        loop {
             let instruction = my_mem.read_pc(pc);
             let decoded = Instruction::new(instruction);
             if !decoded.is_valid() {
                 break;
             }
-            println!("{:#?}",decoded);
-            pc = pc + 4;
+            println!("{:#?}", decoded);
+            pc += 4;
         }
-        
     }
 }
