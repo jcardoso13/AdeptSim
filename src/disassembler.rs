@@ -49,7 +49,7 @@ fn main() {
 
                 let decoded = Instruction::new(instruction);
 
-                println!("{:x}:\t{:#?}", address, decoded);
+                println!("{:x}:\t{:x}\t{:#?}", address, instruction, decoded);
             }
         }
     }
