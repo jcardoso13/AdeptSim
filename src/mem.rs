@@ -73,7 +73,7 @@ impl Memory {
     // # Return Value
     // Masked address converted to usize as to ease Vec addressing
     fn mask_addr(addr: u32) -> usize {
-        (addr & ((1 << Self::MEMORY_ADDR_SIZE) + (1 << Self::MEMORY_ADDR_SIZE) - 1)) as usize
+        (addr % (1 << Self::MEMORY_ADDR_SIZE)) as usize
     }
 
     // Write some garbage data to memory. This is only used in tests, please
