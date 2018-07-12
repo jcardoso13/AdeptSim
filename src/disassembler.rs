@@ -4,11 +4,8 @@ extern crate clap;
 
 use clap::{App, Arg};
 
-mod mem;
 mod riscv;
 
-use mem::{MemStoreOp, Memory};
-use riscv::isa::{RVT,RV32I};
 use riscv::decoder::Instruction;
 
 include!(concat!(env!("OUT_DIR"), "/gitv.rs"));
@@ -36,31 +33,24 @@ fn main() {
             Err(e) => panic!(e.to_string()),
         };
 
-        let mut my_mem = Box::new(Memory::new());
-
         for chunk in mem_data {
-            for offset in 0..chunk.length {
-                let address = (chunk.address as u32) + (offset as u32);
-                my_mem.write_data(
-                    &MemStoreOp::from(RV32I::SB),
-                    address,
-                    chunk.data[offset].into(),
-                );
+            println!("{:x}", chunk.address);
+            for offset in 0..(chunk.length >> 2) {
+                let actual_offset = offset << 2;
+
+                let address = (chunk.address as u32) + (actual_offset as u32);
+
+                let bytes = &(chunk.data[actual_offset..actual_offset + 4]);
+
+                let mut instruction = u32::from(bytes[0]);
+                instruction += u32::from(bytes[1]) << 8;
+                instruction += u32::from(bytes[2]) << 16;
+                instruction += u32::from(bytes[3]) << 24;
+
+                let decoded = Instruction::new(instruction);
+
+                println!("{:x}:\t{:#?}", address, decoded);
             }
         }
-        eprintln!("Finished loading memory from elf");
-
-        let mut pc = 0 as u32;
-
-        loop{
-            let instruction = my_mem.read_pc(pc);
-            let decoded = Instruction::new(instruction);
-            if !decoded.is_valid() {
-                break;
-            }
-            println!("{:#?}",decoded);
-            pc = pc + 4;
-        }
-        
     }
 }
