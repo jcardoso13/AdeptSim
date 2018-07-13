@@ -2,6 +2,7 @@
 
 pub mod decoder;
 pub mod isa;
+pub mod labels;
 
 // Instruction OP codes
 const RV32_OP_CODES_ARITH_IMM: u8 = 0x13;
