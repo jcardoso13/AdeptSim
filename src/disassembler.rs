@@ -54,3 +54,28 @@ fn main() {
         }
     }
 }
+
+fn byte_in_char(byte_in: u8) -> char {
+    if byte_in > 127 {
+        return '.';
+    } else {
+        return byte_in as char;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    ////////////////////////////////////////////////////////////////////////////////
+    // Byte to Char Conversion Test
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Test Registers Printing
+    #[test]
+    fn byte_to_char_test() {
+        // 128 = non_ASCII
+        assert_eq!('.', super::byte_in_char(128));
+        // 97 = letter 'a'
+        assert_eq!('a', super::byte_in_char(97));
+        // 65 = letter 'A'
+        assert_eq!('A', super::byte_in_char(65));
+    }
+}
