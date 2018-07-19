@@ -2,28 +2,15 @@ extern crate adapt_mem_adept;
 #[macro_use]
 extern crate clap;
 
-use clap::{App, Arg};
+use clap::App;
 
 mod riscv;
 
 use riscv::decoder::Instruction;
 
-include!(concat!(env!("OUT_DIR"), "/gitv.rs"));
-
 fn main() {
-    let matches = App::new("adept_disassembler")
-        .version(crate_version!())
-        .long_version(&*format!("{}-{}", crate_version!(), LONG_VERSION))
-        .author(crate_authors!())
-        .about("Disassemble RV32I elfs")
-        .arg(
-            Arg::with_name("input_elf")
-                .value_name("INPUTFILE")
-                .help("Sets the input elf file")
-                .index(1)
-                .required(true),
-        )
-        .get_matches();
+    let yaml = load_yaml!(concat!(env!("OUT_DIR"), "/disassembler.yaml"));
+    let matches = App::from_yaml(yaml).get_matches();
 
     if let Some(filename) = matches.value_of("input_elf") {
         eprintln!("Loading elf: {}", filename);

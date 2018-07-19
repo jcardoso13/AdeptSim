@@ -6,10 +6,14 @@ build = "build.rs"
 
 [dependencies]
 adapt-mem-adept = { path = "adapt-mem-adept" }
-clap = "2.31.2"
+
+[dependencies.clap]
+version = "2.32.0"
+features = [ "yaml" ]
 
 [build-dependencies]
 git2 = "0.6"
+clap = "2.32.0"
 
 [[bin]]
 name = "adept_sim"

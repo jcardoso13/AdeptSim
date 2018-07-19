@@ -2,7 +2,7 @@ extern crate adapt_mem_adept;
 #[macro_use]
 extern crate clap;
 
-use clap::{App, Arg};
+use clap::App;
 
 mod mem;
 mod riscv;
@@ -11,22 +11,9 @@ use mem::{MemStoreOp, Memory};
 use riscv::decoder::Instruction;
 use riscv::isa::RV32I;
 
-include!(concat!(env!("OUT_DIR"), "/gitv.rs"));
-
 fn main() {
-    let matches = App::new(crate_name!())
-        .version(crate_version!())
-        .long_version(&*format!("{}-{}", crate_version!(), LONG_VERSION))
-        .author(crate_authors!())
-        .about(crate_description!())
-        .arg(
-            Arg::with_name("input_elf")
-                .value_name("INPUTFILE")
-                .help("Sets the input elf file")
-                .index(1)
-                .required(true),
-        )
-        .get_matches();
+    let yaml = load_yaml!(concat!(env!("OUT_DIR"), "/main.yaml"));
+    let matches = App::from_yaml(yaml).get_matches();
 
     if let Some(filename) = matches.value_of("input_elf") {
         eprintln!("Loading elf: {}", filename);
