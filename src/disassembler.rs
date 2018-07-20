@@ -15,19 +15,22 @@ fn main() {
     if let Some(filename) = matches.value_of("input_elf") {
         eprintln!("Loading elf: {}", filename);
 
-        let mem_data = match adapt_mem_adept::get_elf_data(filename) {
+        let mem_data = match adapt_mem_adept::get_adept_data(filename) {
             Ok(chunks) => chunks,
             Err(e) => panic!(e.to_string()),
         };
 
         for chunk in mem_data {
-            println!("{:x}", chunk.address);
-            for offset in 0..(chunk.length >> 2) {
+            let base_address = chunk.get_base_address();
+            let chunk_length = chunk.get_contents_length();
+            let chunk_data = chunk.get_contents();
+            println!("{:x}", base_address);
+            for offset in 0..(chunk_length >> 2) {
                 let actual_offset = offset << 2;
 
-                let address = (chunk.address as u32) + (actual_offset as u32);
+                let address = (base_address as u32) + (actual_offset as u32);
 
-                let bytes = &(chunk.data[actual_offset..actual_offset + 4]);
+                let bytes = &(chunk_data[actual_offset..actual_offset + 4]);
 
                 let mut instruction = u32::from(bytes[0]);
                 instruction += u32::from(bytes[1]) << 8;

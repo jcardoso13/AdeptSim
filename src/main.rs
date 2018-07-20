@@ -18,7 +18,7 @@ fn main() {
     if let Some(filename) = matches.value_of("input_elf") {
         eprintln!("Loading elf: {}", filename);
 
-        let mem_data = match adapt_mem_adept::get_elf_data(filename) {
+        let mem_data = match adapt_mem_adept::get_adept_data(filename) {
             Ok(chunks) => chunks,
             Err(e) => panic!(e.to_string()),
         };
@@ -26,12 +26,15 @@ fn main() {
         let mut my_mem = Box::new(Memory::new());
 
         for chunk in mem_data {
-            for offset in 0..chunk.length {
-                let address = (chunk.address as u32) + (offset as u32);
+            let base_address = chunk.get_base_address();
+            let chunk_length = chunk.get_contents_length();
+            for offset in 0..(chunk_length >> 2) {
+                let actual_offset = offset << 2;
+                let address = (base_address as u32) + (actual_offset as u32);
                 my_mem.write_data(
                     &MemStoreOp::from(RV32I::SB),
                     address,
-                    chunk.data[offset].into(),
+                    chunk.get_word(actual_offset).unwrap(),
                 );
             }
         }
