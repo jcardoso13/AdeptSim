@@ -27,13 +27,14 @@ fn main() {
 
         for chunk in mem_data {
             let base_address = chunk.get_base_address();
-            let chunk_length = chunk.get_contents_length();
-            for offset in 0..(chunk_length >> 2) {
+            for offset in 0..(chunk.get_contents_length() >> 2) {
                 let actual_offset = offset << 2;
                 let address = (base_address as u32) + (actual_offset as u32);
                 my_mem.write_data(
                     &MemStoreOp::from(RV32I::SB),
                     address,
+                    // This call to unwrap is safe because actual_offset is
+                    // guaranteed to be within contents_length
                     chunk.get_word(actual_offset).unwrap(),
                 );
             }
