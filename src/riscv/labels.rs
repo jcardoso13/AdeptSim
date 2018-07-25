@@ -1,4 +1,4 @@
-fn get_register_label(reg: u8) -> &'static str {
+pub(super) fn get_register_label(reg: u8) -> &'static str {
     match reg {
         0 => "zero",
         1 => "ra",

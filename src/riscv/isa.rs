@@ -1,6 +1,8 @@
 //! The RISC-V Instruction Set
 use super::*;
 
+use std::fmt::{self, Display, Formatter};
+
 #[derive(Debug, Eq, PartialEq)]
 pub struct InstrType {
     pub instr_type: RVT,
@@ -39,6 +41,18 @@ impl InstrType {
     /// Check if instruction has a register source 2
     pub fn has_rs2(&self) -> bool {
         self.instr_type == RVT::R || self.instr_type == RVT::S || self.instr_type == RVT::B
+    }
+
+    pub fn is_load(&self) -> bool {
+        self.instr_op == RV32I::LB
+            || self.instr_op == RV32I::LBU
+            || self.instr_op == RV32I::LW
+            || self.instr_op == RV32I::LH
+            || self.instr_op == RV32I::LHU
+    }
+
+    pub fn is_shift(&self) -> bool {
+        self.instr_op == RV32I::SLLI || self.instr_op == RV32I::SRAI || self.instr_op == RV32I::SRLI
     }
 }
 
@@ -84,6 +98,57 @@ impl RVT {
             RV32_OP_CODES_ARITH_IMM => RVT::I,
             _ => RVT::Invalid,
         }
+    }
+}
+
+impl Display for InstrType {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        self.instr_op.fmt(f)
+    }
+}
+
+impl Display for RV32I {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            RV32I::ADD => "add",
+            RV32I::ADDI => "addi",
+            RV32I::AND => "and",
+            RV32I::ANDI => "andi",
+            RV32I::AUIPC => "auipc",
+            RV32I::BEQ => "beq",
+            RV32I::BGE => "bge",
+            RV32I::BGEU => "bgeu",
+            RV32I::BLT => "blt",
+            RV32I::BLTU => "bltu",
+            RV32I::BNE => "bne",
+            RV32I::Invalid => "Invalid",
+            RV32I::JAL => "jal",
+            RV32I::JALR => "jalr",
+            RV32I::LB => "lb",
+            RV32I::LBU => "lbu",
+            RV32I::LH => "lh",
+            RV32I::LHU => "lhu",
+            RV32I::LUI => "lui",
+            RV32I::LW => "lw",
+            RV32I::OR => "or",
+            RV32I::ORI => "ori",
+            RV32I::SB => "sb",
+            RV32I::SH => "sh",
+            RV32I::SLL => "sll",
+            RV32I::SLLI => "slli",
+            RV32I::SLT => "slt",
+            RV32I::SLTI => "slti",
+            RV32I::SLTIU => "sltiu",
+            RV32I::SLTU => "sltu",
+            RV32I::SRA => "sra",
+            RV32I::SRAI => "srai",
+            RV32I::SRL => "srl",
+            RV32I::SRLI => "srli",
+            RV32I::SUB => "sub",
+            RV32I::SW => "sw",
+            RV32I::XOR => "xor",
+            RV32I::XORI => "xori",
+        }.fmt(f)
     }
 }
 

@@ -1,5 +1,7 @@
 use super::isa::{InstrType, RVT};
+use riscv::labels::*;
 use std::cmp::PartialEq;
+use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug, Eq)]
 pub struct Instruction {
@@ -94,6 +96,72 @@ impl Instruction {
     ///Get instruction validity
     pub fn is_valid(&self) -> bool {
         self.instr.instr_type != RVT::Invalid
+    }
+}
+
+impl Display for Instruction {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self.instr.instr_type {
+            RVT::R => write!(
+                f,
+                "{:<8.3}{},{},{}",
+                self.instr,
+                get_register_label(self.rd.unwrap()),
+                get_register_label(self.rs1.unwrap()),
+                get_register_label(self.rs2.unwrap())
+            ),
+            RVT::I if self.instr.is_load() => write!(
+                f,
+                "{:<8.3}{},{}({})",
+                self.instr,
+                get_register_label(self.rd.unwrap()),
+                self.imm.unwrap(),
+                get_register_label(self.rs1.unwrap())
+            ),
+            RVT::I => write!(
+                f,
+                "{:<8.3}{},{},{}",
+                self.instr,
+                get_register_label(self.rd.unwrap()),
+                get_register_label(self.rs1.unwrap()),
+                if self.instr.is_shift() {
+                    i32::from(self.shamt.unwrap())
+                } else {
+                    self.imm.unwrap()
+                }
+            ),
+            RVT::S => write!(
+                f,
+                "{:<8.3}{}, {}({})",
+                self.instr,
+                get_register_label(self.rs2.unwrap()),
+                self.imm.unwrap(),
+                get_register_label(self.rs1.unwrap())
+            ),
+            RVT::B => write!(
+                f,
+                "{:<8.3}{},{},{}",
+                self.instr,
+                get_register_label(self.rs1.unwrap()),
+                get_register_label(self.rs2.unwrap()),
+                self.imm.unwrap()
+            ),
+            RVT::U => write!(
+                f,
+                "{:<8.3}{},{}",
+                self.instr,
+                get_register_label(self.rd.unwrap()),
+                self.imm.unwrap()
+            ),
+            RVT::J => write!(
+                f,
+                "{:<8.3}{},{}",
+                self.instr,
+                get_register_label(self.rd.unwrap()),
+                self.imm.unwrap()
+            ),
+            _ => write!(f, "Invalid!"),
+        }
     }
 }
 
