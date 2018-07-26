@@ -22,13 +22,17 @@ impl InstrType {
 
     /// Check if instruction has a destination register
     pub fn has_rd(&self) -> bool {
-        self.instr_type == RVT::R || self.instr_type == RVT::I || self.instr_type == RVT::U
+        self.instr_type == RVT::R
+            || self.instr_type == RVT::I
+            || self.instr_type == RVT::U
             || self.instr_type == RVT::J
     }
 
     /// Check if instruction has a register source 1
     pub fn has_rs1(&self) -> bool {
-        self.instr_type == RVT::R || self.instr_type == RVT::I || self.instr_type == RVT::S
+        self.instr_type == RVT::R
+            || self.instr_type == RVT::I
+            || self.instr_type == RVT::S
             || self.instr_type == RVT::B
     }
 
