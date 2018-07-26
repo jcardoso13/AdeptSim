@@ -71,12 +71,12 @@ macro_rules! write_clap_yaml_header {
 }
 
 macro_rules! write_clap_yaml_arg_params {
-    ($output:ident, $label:expr, $value:expr) => (
-        write_yaml_line!($output,"        ",$label,$value)
+    ($output:ident, $param:expr) => (
+        write_yaml_line!($output,"        ",$param.0,$param.1)
     );
-    ($output:ident, $headlabel:expr, $headvalue:expr, $($labels:expr, $values:expr),+) => {{
-        write_clap_yaml_arg_params!($output,$headlabel,$headvalue)?;
-        write_clap_yaml_arg_params!($output,$($labels, $values),+)
+    ($output:ident, $headparam:expr, $($params:expr),+) => {{
+        write_clap_yaml_arg_params!($output,$headparam)?;
+        write_clap_yaml_arg_params!($output,$($params),+)
     }};
 }
 
@@ -87,9 +87,9 @@ macro_rules! write_clap_yaml_arg_header {
 }
 
 macro_rules! write_clap_yaml_arg {
-    ($output:ident, $arg:expr, $($labels:expr, $values:expr),+) => {{
+    ($output:ident, $arg:expr, $($params:expr),+) => {{
         write_yaml_line!($output, "    - ", $arg, "")?;
-        write_clap_yaml_arg_params!($output,$($labels, $values),+)
+        write_clap_yaml_arg_params!($output,$($params),+)
     }};
 }
 
@@ -124,10 +124,10 @@ fn main() -> Result<(), Error> {
     write_clap_yaml_arg!(
         f,
         "input_elf",
-        "value_name", "\"INPUTFILE\"",
-        "help", "\"Sets the input elf file\"",
-        "required", "true",
-        "index", "1"
+        ("value_name", "\"INPUTFILE\""),
+        ("help", "\"Sets the input elf file\""),
+        ("required", "true"),
+        ("index", "1")
     )?;
 
     // Disassembler Binary:
@@ -146,10 +146,10 @@ fn main() -> Result<(), Error> {
     write_clap_yaml_arg!(
         f,
         "input_elf",
-        "value_name", "\"INPUTFILE\"",
-        "help", "\"Sets the input elf file\"",
-        "required", "true",
-        "index", "1"
+        ("value_name", "\"INPUTFILE\""),
+        ("help", "\"Sets the input elf file\""),
+        ("required", "true"),
+        ("index", "1")
     )?;
 
     Ok(())
