@@ -5,7 +5,7 @@
 //! # Example:
 //!
 //! ```
-//! # use adept_sim::register_file::RegisterFile;
+//! # use adept_lib::register_file::RegisterFile;
 //! let mut my_reg_file = RegisterFile::new();
 //! // Write 5 to register 0 is ignored
 //! my_reg_file.write(0, 5);

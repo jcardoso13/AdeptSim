@@ -1,12 +1,11 @@
 extern crate adapt_mem_adept;
 #[macro_use]
 extern crate clap;
+extern crate adept_lib;
 
 use clap::App;
 
-mod riscv;
-
-use riscv::decoder::Instruction;
+use adept_lib::riscv::decoder::Instruction;
 
 fn main() {
     let yaml = load_yaml!(concat!(env!("OUT_DIR"), "/disassembler.yaml"));

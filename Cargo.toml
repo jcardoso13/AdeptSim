@@ -15,6 +15,10 @@ features = [ "yaml" ]
 git2 = "0.6"
 clap = "2.32.0"
 
+[lib]
+name = "adept_lib"
+path = "src/lib.rs"
+
 [[bin]]
 name = "adept_sim"
 path = "src/main.rs"

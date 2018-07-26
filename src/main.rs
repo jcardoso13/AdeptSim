@@ -1,15 +1,13 @@
 extern crate adapt_mem_adept;
 #[macro_use]
 extern crate clap;
+extern crate adept_lib;
 
 use clap::App;
 
-mod mem;
-mod riscv;
-
-use mem::{MemStoreOp, Memory};
-use riscv::decoder::Instruction;
-use riscv::isa::RV32I;
+use adept_lib::mem::{MemStoreOp, Memory};
+use adept_lib::riscv::decoder::Instruction;
+use adept_lib::riscv::isa::RV32I;
 
 fn main() {
     let yaml = load_yaml!(concat!(env!("OUT_DIR"), "/main.yaml"));

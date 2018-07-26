@@ -6,8 +6,8 @@
 //! # Example:
 //!
 //! ```
-//! # use adept_sim::mem::{Memory, MemStoreOp, MemLoadOp};
-//! # use adept_sim::riscv::isa::RV32I;
+//! # use adept_lib::mem::{Memory, MemStoreOp, MemLoadOp};
+//! # use adept_lib::riscv::isa::RV32I;
 //! let mut my_mem = Box::new(Memory::new());
 //! # my_mem.write_data(&MemStoreOp::from(RV32I::SW), 0x0040_babc, 0xdead_beef);
 //! // To read the PC use the read_pc method
@@ -170,7 +170,9 @@ impl Memory {
                 let data_2 = self.get_data(masked_addr, addr_lsbs + 2);
                 let data_3 = self.get_data(masked_addr, addr_lsbs + 3);
 
-                (u32::from(data_3) << 24 | u32::from(data_2) << 16 | u32::from(data_1) << 8
+                (u32::from(data_3) << 24
+                    | u32::from(data_2) << 16
+                    | u32::from(data_1) << 8
                     | u32::from(data_0)) as i32
             }
             MemLoadOp::LoadByteUnsigned => i32::from(self.get_data(masked_addr, addr_lsbs)),
