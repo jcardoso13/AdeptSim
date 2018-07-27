@@ -38,17 +38,26 @@ fn main() {
 
                 let decoded = Instruction::new(instruction);
 
-                println!("{:x}:\t{:x}\t{:#?}", address, instruction, decoded);
+                println!(
+                    "{:>8x}: {: >8x} [{}{}{}{}] {}",
+                    address,
+                    instruction,
+                    byte_in_char(bytes[3]),
+                    byte_in_char(bytes[2]),
+                    byte_in_char(bytes[1]),
+                    byte_in_char(bytes[0]),
+                    decoded
+                );
             }
         }
     }
 }
 
 fn byte_in_char(byte_in: u8) -> char {
-    if byte_in > 127 {
-        return '.';
+    if byte_in > 126 || byte_in < 32 {
+        '.'
     } else {
-        return byte_in as char;
+        byte_in as char
     }
 }
 
