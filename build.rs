@@ -151,6 +151,37 @@ fn main() -> Result<(), Error> {
         ("required", "true"),
         ("index", "1")
     )?;
+    write_clap_yaml_arg!(
+        f,
+        "PC",
+        ("help", "\"Displays Program Counter\""),
+        ("short", "p"),
+        ("long", "pc")
+    )?;
+    write_clap_yaml_arg!(
+        f,
+        "Instruction",
+        (
+            "help",
+            "\"Displays a unsigned 32 bit in hex format Instruction\""
+        ),
+        ("short", "i"),
+        ("long", "instruction")
+    )?;
+    write_clap_yaml_arg!(
+        f,
+        "AssemblyCode",
+        ("help", "\"Displays Assembly code\""),
+        ("short", "a"),
+        ("long", "assembly")
+    )?;
+    write_clap_yaml_arg!(
+        f,
+        "ASCII",
+        ("help", "\" Displays the Data\""),
+        ("short", "c"),
+        ("long", "ascii")
+    )?;
 
     Ok(())
 }

@@ -19,6 +19,12 @@ fn main() {
             Err(e) => panic!(e.to_string()),
         };
 
+        let show_disassembled = matches.is_present("AssemblyCode");
+        let show_hex = matches.is_present("Instruction");
+        let show_counter = matches.is_present("PC");
+        let show_ascii = matches.is_present("ASCII");
+        let show_all = !(show_disassembled || show_hex || show_counter || show_ascii);
+
         for chunk in mem_data {
             let base_address = chunk.get_base_address();
             let chunk_length = chunk.get_contents_length();
@@ -38,16 +44,25 @@ fn main() {
 
                 let decoded = Instruction::new(instruction);
 
-                println!(
-                    "{:>8x}: {: >8x} [{}{}{}{}] {}",
-                    address,
-                    instruction,
-                    byte_in_char(bytes[3]),
-                    byte_in_char(bytes[2]),
-                    byte_in_char(bytes[1]),
-                    byte_in_char(bytes[0]),
-                    decoded
-                );
+                if show_counter || show_all {
+                    print!("{:>8}", address);
+                }
+                if show_hex || show_all {
+                    print!("{:>8}", instruction);
+                }
+                if show_ascii || show_all {
+                    print!(
+                        "[{}{}{}{}] ",
+                        byte_in_char(bytes[3]),
+                        byte_in_char(bytes[2]),
+                        byte_in_char(bytes[1]),
+                        byte_in_char(bytes[0])
+                    );
+                }
+                if show_disassembled || show_all {
+                    print!("{}", decoded);
+                }
+                println!();
             }
         }
     }
