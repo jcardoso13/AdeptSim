@@ -307,7 +307,7 @@ impl Display for Instruction {
         match self.instr.instr_type {
             RVT::R => write!(
                 f,
-                "{:<8.3}{},{},{}",
+                "{:<8.6}{},{},{}",
                 self.instr,
                 get_register_label(self.rd.unwrap()),
                 get_register_label(self.rs1.unwrap()),
@@ -315,7 +315,7 @@ impl Display for Instruction {
             ),
             RVT::I if self.instr.is_load() => write!(
                 f,
-                "{:<8.3}{},{}({})",
+                "{:<8.6}{},{}({})",
                 self.instr,
                 get_register_label(self.rd.unwrap()),
                 self.imm.unwrap(),
@@ -323,7 +323,7 @@ impl Display for Instruction {
             ),
             RVT::I => write!(
                 f,
-                "{:<8.3}{},{},{}",
+                "{:<8.6}{},{},{}",
                 self.instr,
                 get_register_label(self.rd.unwrap()),
                 get_register_label(self.rs1.unwrap()),
@@ -335,7 +335,7 @@ impl Display for Instruction {
             ),
             RVT::S => write!(
                 f,
-                "{:<8.3}{}, {}({})",
+                "{:<8.6}{}, {}({})",
                 self.instr,
                 get_register_label(self.rs2.unwrap()),
                 self.imm.unwrap(),
@@ -343,7 +343,7 @@ impl Display for Instruction {
             ),
             RVT::B => write!(
                 f,
-                "{:<8.3}{},{},{}",
+                "{:<8.6}{},{},{}",
                 self.instr,
                 get_register_label(self.rs1.unwrap()),
                 get_register_label(self.rs2.unwrap()),
@@ -351,14 +351,14 @@ impl Display for Instruction {
             ),
             RVT::U => write!(
                 f,
-                "{:<8.3}{},{}",
+                "{:<8.6}{},{}",
                 self.instr,
                 get_register_label(self.rd.unwrap()),
                 self.imm.unwrap()
             ),
             RVT::J => write!(
                 f,
-                "{:<8.3}{},{}",
+                "{:<8.6}{},{}",
                 self.instr,
                 get_register_label(self.rd.unwrap()),
                 self.imm.unwrap()

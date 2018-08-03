@@ -45,10 +45,10 @@ fn main() {
                 let decoded = Instruction::new(instruction);
 
                 if show_counter || show_all {
-                    print!("{:>8}", address);
+                    print!("{:>8} ", address);
                 }
                 if show_hex || show_all {
-                    print!("{:>8}", instruction);
+                    print!("{:>10} ", instruction);
                 }
                 if show_ascii || show_all {
                     print!(
