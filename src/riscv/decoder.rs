@@ -1,7 +1,189 @@
-use super::isa::{InstrType, RVT};
+use super::isa::{InstrType, RV32I, RVT};
 use riscv::labels::*;
 use std::cmp::PartialEq;
 use std::fmt::{self, Display, Formatter};
+
+// Macro create a PseudoInstrWith1Instr instance
+macro_rules! specs_init {
+    ($instr:expr, $is_pseudo:expr, $code:expr, $rd:expr, $rs:expr, $rt:expr, $offset:expr) => {
+        PseudoInstrWith1Instr {
+            instr: $instr,
+            is_pseudo: $is_pseudo,
+            code: $code,
+            rd: $rd,
+            rs: $rs,
+            rt: $rt,
+            offset: $offset,
+        }
+    };
+}
+
+#[derive(Debug)]
+// Struct to pseudoinstructions with 1 instruction
+pub struct PseudoInstrWith1Instr {
+    /// Corresponding instruction
+    instr: Instruction,
+
+    is_pseudo: bool,
+
+    /// Instruction Type
+    code: &'static str,
+
+    // Registers
+    /// Destination Registers
+    rd: Option<u8>,
+
+    /// Register rs
+    rs: Option<u8>,
+    /// Register rt
+    rt: Option<u8>,
+
+    /// Immediate
+    offset: Option<i32>,
+}
+
+impl PseudoInstrWith1Instr {
+    // Create pseudo instr based on instruction: new functions
+    pub fn new(instr_in: Instruction) -> Self {
+        let rd_in: Option<u8> = instr_in.get_rd();
+        let rs1_in: Option<u8> = instr_in.get_rs1();
+        let rs2_in: Option<u8> = instr_in.get_rs2();
+        let offset_in: Option<i32> = instr_in.get_imm();
+        let instr_op: RV32I = instr_in.instr.get_instr_op();
+
+        /* Check if the introduced instruction is a pseudoinstruction.
+         * You can find a list of all pseudoinstructions in page 142 of
+         * the RISC-V spec. This implementation is correct as of version 2.2.*/
+
+        if rd_in.is_some() && rd_in.unwrap() == 0 {
+            /* Pseudoinstructions where the corresponding instruction has
+             * rd and rs1 both with specific registers*/
+            match instr_op {
+                RV32I::JAL => return specs_init!(instr_in, true, "j", None, None, None, offset_in),
+                RV32I::JALR => {
+                    if rs1_in.is_some() && rs1_in.unwrap() == 1 {
+                        return specs_init!(instr_in, true, "ret", None, None, None, None);
+                    }
+                    return specs_init!(instr_in, true, "jr", None, rs1_in, None, None);
+                }
+                RV32I::ADDI => {
+                    if rs1_in.is_some()
+                        && offset_in.is_some()
+                        && rs1_in.unwrap() == 0
+                        && offset_in.unwrap() == 0
+                    {
+                        return specs_init!(instr_in, true, "nop", None, None, None, None);
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        /* Parse instructions which update the return address (rd=x1) */
+        if rd_in.is_some() && rd_in.unwrap() == 1 {
+            match instr_op {
+                RV32I::JAL => {
+                    return specs_init!(instr_in, true, "jal", None, None, None, offset_in)
+                }
+                RV32I::JALR => return specs_init!(instr_in, true, "jalr", None, rs1_in, None, None),
+                _ => {}
+            }
+        }
+
+        /* Parse instructions which don't use their second operand (rs2=x0) */
+        if rs2_in.is_some() && rs2_in.unwrap() == 0 {
+            match instr_op {
+                RV32I::SUB => return specs_init!(instr_in, true, "neg", rd_in, rs1_in, None, None),
+                RV32I::SLTU => {
+                    return specs_init!(instr_in, true, "snez", rd_in, rs1_in, None, None)
+                }
+                RV32I::SLT => return specs_init!(instr_in, true, "sgtz", rd_in, rs1_in, None, None),
+                RV32I::BGE => {
+                    return specs_init!(instr_in, true, "blez", None, rs1_in, None, offset_in)
+                }
+                RV32I::BLT => {
+                    return specs_init!(instr_in, true, "bgtz", None, rs1_in, None, offset_in)
+                }
+                _ => {}
+            }
+        }
+
+        /* Pseudoinstructions where the corresponding instruction has
+         * rs1=x0, then make a match of the instruction operation */
+        if rs1_in.is_some() && rs1_in.unwrap() == 0 {
+            match instr_op {
+                RV32I::SLT => return specs_init!(instr_in, true, "sltz", rd_in, rs2_in, None, None),
+                RV32I::BEQ => {
+                    return specs_init!(instr_in, true, "beqz", None, rs2_in, None, offset_in)
+                }
+                RV32I::BNE => {
+                    return specs_init!(instr_in, true, "bnez", None, rs2_in, None, offset_in)
+                }
+                RV32I::BGE => {
+                    return specs_init!(instr_in, true, "bgez", None, rs2_in, None, offset_in)
+                }
+                RV32I::BLT => {
+                    return specs_init!(instr_in, true, "bgez", None, rs2_in, None, offset_in)
+                }
+                _ => {}
+            }
+        }
+
+        /* Pseudoinstructions where the corresponding instruction has
+         * offset=0 */
+        if offset_in.is_some() && offset_in.unwrap() == 0 && instr_op == RV32I::ADDI {
+            return specs_init!(instr_in, true, "mv", rd_in, rs1_in, None, None);
+        }
+
+        /* Pseudoinstructions where the corresponding instruction has
+         * offset=-1 */
+        if offset_in.is_some() && offset_in.unwrap() == -1 && instr_op == RV32I::XORI {
+            return specs_init!(instr_in, true, "not", rd_in, rs1_in, None, None);
+        }
+
+        /* Pseudoinstructions where the corresponding instruction has
+         * offset=1 */
+        if offset_in.is_some() && offset_in.unwrap() == 1 && instr_op == RV32I::SLTIU {
+            return specs_init!(instr_in, true, "seqz", rd_in, rs1_in, None, None);
+        }
+
+        // The blt, bge, bltu and bgeu cases of the spec table
+        match instr_op {
+            RV32I::BLT => specs_init!(instr_in, true, "bgt", None, rs1_in, rs2_in, offset_in),
+            RV32I::BGE => specs_init!(instr_in, true, "ble", None, rs1_in, rs2_in, offset_in),
+            RV32I::BLTU => specs_init!(instr_in, true, "bgtu", None, rs1_in, rs2_in, offset_in),
+            RV32I::BGEU => specs_init!(instr_in, true, "bleu", None, rs1_in, rs2_in, offset_in),
+            _ => {
+                // Return that there is not a pseudoinstruction if no criteria filled
+                specs_init!(instr_in, false, "", None, None, None, None)
+            }
+        }
+    }
+}
+
+impl Display for PseudoInstrWith1Instr {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{}	", self.code)?;
+
+        if let Some(output) = self.rd {
+            write!(f, "{}, ", get_register_label(output))?;
+        }
+
+        if let Some(output) = self.rs {
+            write!(f, "{}", get_register_label(output))?;
+        }
+
+        if let Some(output) = self.rt {
+            write!(f, ", {}, ", get_register_label(output))?;
+        }
+
+        if let Some(output) = self.offset {
+            write!(f, "0x{:0x}", output)?;
+        }
+
+        write!(f, "")
+    }
+}
 
 #[derive(Debug, Eq)]
 pub struct Instruction {
@@ -96,6 +278,27 @@ impl Instruction {
     ///Get instruction validity
     pub fn is_valid(&self) -> bool {
         self.instr.instr_type != RVT::Invalid
+    }
+
+    /// Get instructon elements
+    pub fn get_rd(&self) -> Option<u8> {
+        self.rd
+    }
+
+    pub fn get_rs1(&self) -> Option<u8> {
+        self.rs1
+    }
+
+    pub fn get_rs2(&self) -> Option<u8> {
+        self.rs2
+    }
+
+    pub fn get_shamt(&self) -> Option<u8> {
+        self.shamt
+    }
+
+    pub fn get_imm(&self) -> Option<i32> {
+        self.imm
     }
 }
 

@@ -54,6 +54,10 @@ impl InstrType {
     pub fn is_shift(&self) -> bool {
         self.instr_op == RV32I::SLLI || self.instr_op == RV32I::SRAI || self.instr_op == RV32I::SRLI
     }
+
+    pub fn get_instr_op(&self) -> RV32I {
+        self.instr_op
+    }
 }
 
 /// Instruction Register Types
@@ -153,7 +157,9 @@ impl Display for RV32I {
 }
 
 /// RISC-V 32-bit ISA
-#[derive(Debug, Eq, PartialEq)]
+// Copy trait is implemented for this struct to be taken from InstrType
+// struct when using it to create pseudoinstructions
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub enum RV32I {
     //////////////
     // Arithmetic
